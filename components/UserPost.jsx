@@ -1,14 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchWithToken } from "@/utils/fetcher";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { FaBookmark, FaRegBookmark, FaRegComment, FaRegHeart } from "react-icons/fa";
-import { FcLikePlaceholder, FcLike } from "react-icons/fc";
+import { FcLike } from "react-icons/fc";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

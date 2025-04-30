@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FaBookmark, FaRegBookmark, FaRegComment, FaRegHeart } from "react-icons/fa";
-import { FcLikePlaceholder, FcLike } from "react-icons/fc";
+import { FcLike } from "react-icons/fc";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

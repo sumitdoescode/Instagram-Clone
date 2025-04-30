@@ -1,18 +1,15 @@
 "use client";
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { fetchWithToken } from "@/utils/fetcher";
 import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const SearchResults = () => {
+const SearchResults = ({ query }) => {
     const { getToken } = useAuth();
     const router = useRouter();
-
-    const searchParams = useSearchParams();
-    const query = searchParams.get("query");
 
     const fetcher = async () => {
         const token = await getToken();

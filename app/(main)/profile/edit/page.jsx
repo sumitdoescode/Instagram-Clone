@@ -11,7 +11,6 @@ import useSWRMutation from "swr/mutation";
 import { fetchWithToken, patchWithToken } from "@/utils/fetcher";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { UserProfile } from "@clerk/nextjs";
 
 const EditProfilePage = () => {
     const [usernameState, setUsernameState] = useState("");

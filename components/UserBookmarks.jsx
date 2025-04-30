@@ -2,7 +2,6 @@ import React from "react";
 import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import { useAuth } from "@clerk/nextjs";
-import UserPost from "./UserPost";
 import Post from "./Post";
 
 const UserBookmarks = () => {

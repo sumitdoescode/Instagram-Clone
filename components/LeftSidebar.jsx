@@ -3,13 +3,13 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import Link from "next/link";
-import { Home, Search, BadgePlus, MessageCircleMore, User, LogOut, CircleUserRound } from "lucide-react";
+import { Home, Search, MessageCircleMore, User, LogOut, CircleUserRound } from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
 import CreatePost from "./CreatePost";
 import { fetchWithToken } from "@/utils/fetcher";
 import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
 import { AlignJustify } from "lucide-react";
 
 const LeftSidebar = () => {
