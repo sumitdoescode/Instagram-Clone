@@ -82,7 +82,7 @@ export default function ProfilePage() {
                                     {following ? "Unfollow" : "Follow"}
                                 </Button>
                             )}
-                            <Button variant="outline" className="cursor-pointer">
+                            <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/message`)}>
                                 Message
                             </Button>
                         </div>
@@ -102,12 +102,21 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className={"mt-14 w-full flex items-center justify-center"}>
+                <CardContent className={"mt-14 w-full flex items-center justify-center p-0"}>
                     <Tabs defaultValue="posts" className="w-full max-w-xl">
-                        <TabsList>
-                            <TabsTrigger value="posts">Posts</TabsTrigger>
-                            <TabsTrigger value="followers">Followers</TabsTrigger>
-                            <TabsTrigger value="followings">Followings</TabsTrigger>
+                        <TabsList className="">
+                            <TabsTrigger className="text-xs sm:text-sm" value="posts">
+                                Posts
+                            </TabsTrigger>
+                            <TabsTrigger className="text-xs sm:text-sm" value="followers">
+                                Followers
+                            </TabsTrigger>
+                            <TabsTrigger className="text-xs sm:text-sm" value="followings">
+                                Followings
+                            </TabsTrigger>
+                            <TabsTrigger className="text-xs sm:text-sm" value="bookmarks">
+                                Bookmarks
+                            </TabsTrigger>
                         </TabsList>
                         <TabsContent value="posts" className={""}>
                             <UserPosts _id={id} />

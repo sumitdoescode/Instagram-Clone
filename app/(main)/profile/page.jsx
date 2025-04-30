@@ -34,7 +34,7 @@ export default function OwnProfilePage() {
 
     return (
         <Section>
-            <Card>
+            <Card className="">
                 <CardHeader className="flex items-center justify-center">
                     <div className="text-center">
                         <Avatar className="w-50 h-50 m-auto">
@@ -50,7 +50,7 @@ export default function OwnProfilePage() {
                         <CardContent className="mt-2">{bio}</CardContent>
                         <p className="mt-1 text-md text-gray-300">{email}</p>
                         <div className="flex items-center justify-center gap-2 mt-6">
-                            <Button variant="outline" className="cursor-pointer">
+                            <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/message`)}>
                                 Message
                             </Button>
                             <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/profile/edit`)}>
@@ -73,13 +73,21 @@ export default function OwnProfilePage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className={"mt-14 w-full flex items-center justify-center"}>
-                    <Tabs defaultValue="posts" className="w-full max-w-xl">
-                        <TabsList>
-                            <TabsTrigger value="posts">Posts</TabsTrigger>
-                            <TabsTrigger value="followers">Followers</TabsTrigger>
-                            <TabsTrigger value="followings">Followings</TabsTrigger>
-                            <TabsTrigger value="bookmarks">Bookmarks</TabsTrigger>
+                <CardContent className={"mt-14 w-full flex items-center justify-center p-0"}>
+                    <Tabs defaultValue="posts" className="w-full max-w-lg md:max-w-xl">
+                        <TabsList className="">
+                            <TabsTrigger className="text-xs sm:text-sm" value="posts">
+                                Posts
+                            </TabsTrigger>
+                            <TabsTrigger className="text-xs sm:text-sm" value="followers">
+                                Followers
+                            </TabsTrigger>
+                            <TabsTrigger className="text-xs sm:text-sm" value="followings">
+                                Followings
+                            </TabsTrigger>
+                            <TabsTrigger className="text-xs sm:text-sm" value="bookmarks">
+                                Bookmarks
+                            </TabsTrigger>
                         </TabsList>
                         <TabsContent value="posts">
                             <UserPosts _id={_id} />
