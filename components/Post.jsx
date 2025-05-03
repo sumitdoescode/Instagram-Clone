@@ -11,6 +11,11 @@ import { FaBookmark, FaRegBookmark, FaRegComment, FaRegHeart } from "react-icons
 import { FcLike } from "react-icons/fc";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Copy, Send } from "lucide-react";
 
 const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, isAuthor, isBookmarked, fromRendered }) => {
     const router = useRouter();
@@ -87,6 +92,52 @@ const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, 
                     <div className="flex items-center gap-3">
                         <div onClick={toggleLike}>{liked ? <FcLike size={24} className="cursor-pointer" /> : <FaRegHeart className="cursor-pointer" size={22} />}</div>
                         {fromRendered === "postDetailsPage" ? null : <FaRegComment className="cursor-pointer" size={22} onClick={() => router.push(`/post/${_id}`)} />}
+                        <Dialog>
+                            <DialogTrigger asChild classMame="cursor-pointer">
+                                <Send />
+
+                                {/* <Button variant="outline">Share</Button> */}
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle>Share Post</DialogTitle>
+                                    <DialogDescription>Anyone who has this link will be able to view this post.</DialogDescription>
+                                </DialogHeader>
+                                <div className="flex items-center space-x-2">
+                                    <div className="grid flex-1 gap-2">
+                                        <Label htmlFor="link" className="sr-only">
+                                            Link
+                                        </Label>
+                                        <Input id="link" defaultValue={`https://instagram-clone-frontend-jet.vercel.app/post/${_id}`} readOnly />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        size="sm"
+                                        className="px-3 cursor-pointer"
+                                        onClick={() => {
+                                            navigator.clipboard
+                                                .writeText(`https://instagram-clone-frontend-jet.vercel.app/post/${_id}`)
+                                                .then(() => {
+                                                    toast("Link copied to clipboard!");
+                                                })
+                                                .catch(() => {
+                                                    toast("Failed to copy the link.");
+                                                });
+                                        }}
+                                    >
+                                        <span className="sr-only">Copy</span>
+                                        <Copy />
+                                    </Button>
+                                </div>
+                                <DialogFooter className="sm:justify-start">
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="secondary">
+                                            Close
+                                        </Button>
+                                    </DialogClose>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     <div onClick={toggleBookmark}>{bookmarked ? <FaBookmark size={24} className="cursor-pointer" /> : <FaRegBookmark size={24} className="cursor-pointer" />}</div>
                 </div>

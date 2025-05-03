@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import dayjs from "dayjs";
+import Section from "@/components/Section";
 
 const AccountPage = () => {
     const { getToken } = useAuth();
@@ -51,57 +52,60 @@ const AccountPage = () => {
     if (error) return <h1 className="text-xl">❌ Error fetching user</h1>;
 
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <CardTitle className="text-3xl">Account Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Avatar className="w-50 h-50 m-auto">
-                    <AvatarImage src={userData?.profileImage} alt="" />
-                    <AvatarFallback className="rounded-lg">{userData?.username?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="mt-4 flex flex-col items-center">
-                    <CardTitle className="text-lg mt-2">{userData?.username}</CardTitle>
-                    <p className="mt-1 text-md text-gray-300">{userData?.email}</p>
-                    <div className="flex items-center gap-2 mt-6">
-                        <span>Joined At:</span>
-                        <p className="text-md text-gray-300">{dayjs(userData?.createdAt).format("DD MMMM YYYY")}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span>_id:</span>
-                        <p className="text-md text-gray-300">{userData?._id}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span>clerkId:</span>
-                        <p className="text-md text-gray-300">{userData?.clerkId}</p>
-                    </div>
-                </div>
-            </CardContent>
+        <Section>
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="text-2xl md:text-3xl">Account Settings</CardTitle>
+                </CardHeader>
 
-            <CardFooter>
-                <AlertDialog>
-                    <AlertDialogTrigger className="mx-auto">
-                        <Button className="cursor-pointer" variant="destructive">
-                            Delete Account
-                        </Button>
-                    </AlertDialogTrigger>
+                <CardContent className={"max-w-lg w-full mx-auto"}>
+                    <Avatar className="w-50 h-50 m-auto">
+                        <AvatarImage src={userData?.profileImage} alt="" />
+                        <AvatarFallback className="rounded-lg">{userData?.username?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="mt-4 flex flex-col items-center w-full">
+                        <CardTitle className="text-lg mt-2">{userData?.username}</CardTitle>
+                        <p className="mt-1 text-md text-gray-300">{userData?.email}</p>
+                        <div className="flex items-start gap-2 mt-6">
+                            <span>Joined At:</span>
+                            <p className="text-md text-gray-300">{dayjs(userData?.createdAt).format("DD MMMM YYYY")}</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                            <span>_id:</span>
+                            <p className="text-md text-gray-300 break-all text-center">{userData?._id}</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                            <span>clerkId:</span>
+                            <p className="text-md text-gray-300 break-all text-center max-w-full">{userData?.clerkId}</p>
+                        </div>
+                    </div>
+                </CardContent>
 
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</AlertDialogDescription>
-                        </AlertDialogHeader>
+                <CardFooter>
+                    <AlertDialog>
+                        <AlertDialogTrigger className="mx-auto">
+                            <Button className="cursor-pointer" variant="destructive">
+                                Delete Account
+                            </Button>
+                        </AlertDialogTrigger>
 
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteAccount} className="cursor-pointer" disabled={isMutating}>
-                                {isMutating ? "Deleting..." : "Continue"}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </CardFooter>
-        </Card>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteAccount} className="cursor-pointer" disabled={isMutating}>
+                                    {isMutating ? "Deleting..." : "Continue"}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </CardFooter>
+            </Card>
+        </Section>
     );
 };
 

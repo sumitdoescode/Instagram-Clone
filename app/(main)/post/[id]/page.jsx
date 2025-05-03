@@ -40,7 +40,8 @@ const page = () => {
                     <h1 className="text-xl mt-6">{data.post.caption}</h1>
                     {data.post.isAuthor && (
                         <div className="flex items-center gap-4 mt-8">
-                            <UpdatePost postId={id} caption={data.post.caption} image={data.post.image} />
+                            {/* <UpdatePost postId={id} caption={data.post.caption} image={data.post.image} /> */}
+                            <UpdatePost {...data.post} />
                             <DeletePost postId={id} />
                         </div>
                     )}

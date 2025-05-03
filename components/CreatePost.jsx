@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useRef, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,12 +23,35 @@ const createPostFn = async (url, { arg }) => {
 };
 
 const CreatePost = () => {
-    const [image, setImage] = useState("");
+    const [open, setOpen] = useState(false);
+    const [image, setImage] = useState(null);
     const [caption, setCaption] = useState("");
+    const [previewURL, setPreviewURL] = useState(null);
+
+    const fileInputRef = useRef(null);
     const { getToken } = useAuth();
     const router = useRouter();
 
     const { trigger, isMutating } = useSWRMutation("/post", createPostFn);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setImage(file);
+        if (file) {
+            setPreviewURL(URL.createObjectURL(file));
+        } else {
+            setPreviewURL(null);
+        }
+    };
+
+    const resetForm = () => {
+        setImage(null);
+        setCaption("");
+        setPreviewURL(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = null;
+        }
+    };
 
     const handleCreatePost = async () => {
         const token = await getToken();
@@ -40,8 +64,8 @@ const CreatePost = () => {
             const res = await trigger({ image, caption, token });
             if (res.success) {
                 toast("Post created successfully!");
-                setImage("");
-                setCaption("");
+                resetForm();
+                setOpen(false);
                 router.push("/");
             } else {
                 toast("Error while creating post!");
@@ -50,28 +74,31 @@ const CreatePost = () => {
             toast(error.message);
         }
     };
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 cursor-pointer">
                     <BadgePlus size={22} />
                     <span className="text-xl">Create Post</span>
                 </div>
             </DialogTrigger>
+
             <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Create Post</DialogTitle>
                 </DialogHeader>
+
                 <div className="grid gap-4 py-4 w-full">
-                    <div className="grid grid-cols-4 items-center gap-4 w-full">
-                        <Input id="file" className="col-span-4" type="file" onChange={(e) => setImage(e.target.files[0])} required={true} />
-                    </div>
-                    <div className="grid grid-cols-4 gap-4 w-full">
-                        <Textarea placeholder="Type your Caption here." className="col-span-4" onChange={(e) => setCaption(e.target.value)} value={caption} required={true} />
-                    </div>
+                    <Input id="file" ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="col-span-4" />
+
+                    {previewURL && <img src={previewURL} alt="Preview" className="mt-2 max-h-64 rounded-lg object-contain border" />}
+
+                    <Textarea placeholder="Type your caption here." className="col-span-4" value={caption} onChange={(e) => setCaption(e.target.value)} required />
                 </div>
+
                 <DialogFooter>
-                    <Button type="submit" className="cursor-pointer" onClick={handleCreatePost} disabled={isMutating}>
+                    <Button type="submit" onClick={handleCreatePost} disabled={isMutating}>
                         {isMutating ? "Posting..." : "Create Post"}
                     </Button>
                 </DialogFooter>

@@ -9,8 +9,8 @@ import CreatePost from "./CreatePost";
 import { fetchWithToken } from "@/utils/fetcher";
 import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
-import { AlignJustify } from "lucide-react";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { AlignJustify, X } from "lucide-react";
 
 const LeftSidebar = () => {
     const { getToken } = useAuth();
@@ -62,11 +62,13 @@ const LeftSidebar = () => {
                     <AlignJustify size={24} />
                 </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px]">
-                <SheetHeader>
-                    <Link href="/">
-                        <Image src="/instagram-logo.png" width={500} height={500} alt="Instagram Logo" className="w-[160px] h-auto" />
-                    </Link>
+            <SheetContent side="left" className="w-[250px] p-0">
+                <SheetHeader className={"border p-2"}>
+                    <SheetTitle>
+                        <Link href="/">
+                            <Image src="/instagram-logo.png" width={500} height={500} alt="Instagram Logo" className="w-[160px] h-auto" />
+                        </Link>
+                    </SheetTitle>
                 </SheetHeader>
 
                 <div className="px-2">
@@ -91,7 +93,7 @@ const LeftSidebar = () => {
                         <div className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md cursor-pointer">
                             <div>
                                 {/* clerk signout button */}
-                                <SignOutButton fallbackRedirectUrl="sign-in">
+                                <SignOutButton fallbackredirecturl="/sign-in">
                                     <div className="flex items-center gap-2">
                                         <LogOut size={22} />
                                         <span className="text-xl">Logout</span>

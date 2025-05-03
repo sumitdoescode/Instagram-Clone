@@ -6,7 +6,7 @@ export default function SignInPage() {
     return (
         <Section>
             <div className="flex items-center justify-center w-full pt-24">
-                <SignUp fallbackRedirectUrl="/" />
+                <SignUp fallbackredirecturl="/" />
             </div>
         </Section>
     );
