@@ -33,7 +33,7 @@ const EditProfilePage = () => {
             setUsernameState(data.user.username);
             setBioState(data.user.bio);
             setGenderState(data.user.gender);
-            setPreviewImage(data.user.profileImage);
+            setPreviewImage(data.user.profileImage.url);
         }
     }, [data]);
 
@@ -128,7 +128,7 @@ const EditProfilePage = () => {
                                 };
                                 reader.readAsDataURL(file);
                             } else {
-                                setPreviewImage(data.user.profileImage);
+                                setPreviewImage(data.user.profileImage.url);
                             }
                         }}
                     />

@@ -38,7 +38,7 @@ export default function OwnProfilePage() {
                 <CardHeader className="flex items-center justify-center">
                     <div className="text-center">
                         <Avatar className="w-50 h-50 m-auto">
-                            <AvatarImage src={profileImage} alt="username profileImage" />
+                            <AvatarImage src={profileImage.url} alt="username profileImage" />
                             <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-center mt-4">

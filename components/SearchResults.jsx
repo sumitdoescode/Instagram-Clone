@@ -31,7 +31,7 @@ const SearchResults = ({ query }) => {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2" onClick={() => router.push(`/profile/${_id}`)}>
                                     <Avatar className={"w-10 h-10"}>
-                                        <AvatarImage src={profileImage} alt={`${username} profileImage`} size={40} />
+                                        <AvatarImage src={profileImage.url} alt={`${username} profileImage`} size={40} />
                                         <AvatarFallback>{username.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">

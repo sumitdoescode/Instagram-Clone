@@ -71,7 +71,7 @@ const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, 
                 <div className="flex items-center justify-between">
                     <div className="cursor-pointer flex items-center gap-2" onClick={() => router.push(`/profile/${author._id}`)}>
                         <Avatar>
-                            <AvatarImage src={profileImage} />
+                            <AvatarImage src={profileImage.url} />
                             <AvatarFallback>{username.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">

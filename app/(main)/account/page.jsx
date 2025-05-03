@@ -60,7 +60,7 @@ const AccountPage = () => {
 
                 <CardContent className={"max-w-lg w-full mx-auto"}>
                     <Avatar className="w-50 h-50 m-auto">
-                        <AvatarImage src={userData?.profileImage} alt="" />
+                        <AvatarImage src={userData?.profileImage.url} alt="" />
                         <AvatarFallback className="rounded-lg">{userData?.username?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="mt-4 flex flex-col items-center w-full">

@@ -63,7 +63,7 @@ const LeftSidebar = () => {
                 </button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[250px] p-0">
-                <SheetHeader className={"border p-2"}>
+                <SheetHeader className={"p-2"}>
                     <SheetTitle>
                         <Link href="/">
                             <Image src="/instagram-logo.png" width={500} height={500} alt="Instagram Logo" className="w-[160px] h-auto" />
@@ -107,7 +107,7 @@ const LeftSidebar = () => {
                     <div>
                         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={user?.profileImage} alt={user?.username} />
+                                <AvatarImage src={user?.profileImage?.url} alt={user?.username} />
                                 <AvatarFallback className="rounded-lg">{user?.username.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">

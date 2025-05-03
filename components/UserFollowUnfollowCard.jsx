@@ -46,7 +46,7 @@ const UserFollowUnfollowCard = ({ _id, username, profileImage, gender, followers
                 }}
             >
                 <Avatar className="w-8 h-8">
-                    <AvatarImage src={profileImage} alt={`${username} profileImage`} />
+                    <AvatarImage src={profileImage.url} alt={`${username} profileImage`} />
                     <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="">
