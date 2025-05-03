@@ -84,7 +84,7 @@ const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, 
             </CardHeader>
 
             <CardContent onClick={() => router.push(`/post/${_id}`)} className="cursor-pointer px-2">
-                <Image src={image} width={400} height={400} alt="Picture of the author" className="w-full rounded-lg object-cover" priority />
+                <Image src={image.url} width={400} height={400} alt="Picture of the author" className="w-full rounded-lg object-cover" priority />
             </CardContent>
 
             <CardFooter className={"block px-3 mt-5"}>

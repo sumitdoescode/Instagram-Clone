@@ -65,7 +65,7 @@ const UserPost = ({ _id, caption, image, author, isLiked, likesCount, commentCou
     return (
         <Card className="w-full p-2">
             <CardContent onClick={() => router.push(`/post/${_id}`)} className="cursor-pointer p-0">
-                <Image src={image} width={400} height={400} alt="Picture of the author" className="w-full object-cover rounded-md" />
+                <Image src={image.url} width={400} height={400} alt="Picture of the author" className="w-full object-cover rounded-md" />
             </CardContent>
 
             <CardFooter className="block p-3 pb-5 pt-0">

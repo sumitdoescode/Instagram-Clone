@@ -16,9 +16,11 @@ const EditProfilePage = () => {
     const [usernameState, setUsernameState] = useState("");
     const [bioState, setBioState] = useState("");
     const [genderState, setGenderState] = useState("");
-    const [profileImageState, setProfileImageState] = useState("");
+    const [profileImageState, setProfileImageState] = useState(null);
+    const [previewImage, setPreviewImage] = useState("");
 
     const { getToken } = useAuth();
+
     const fetcher = async () => {
         const token = await getToken();
         return await fetchWithToken(`/user`, token);
@@ -31,6 +33,7 @@ const EditProfilePage = () => {
             setUsernameState(data.user.username);
             setBioState(data.user.bio);
             setGenderState(data.user.gender);
+            setPreviewImage(data.user.profileImage);
         }
     }, [data]);
 
@@ -40,11 +43,12 @@ const EditProfilePage = () => {
         return res;
     };
 
-    // api/v1
     const { trigger, isMutating } = useSWRMutation(`/user`, fetcher2);
+
     const handleEditProfile = async () => {
         const token = await getToken();
         const formData = new FormData();
+
         if (usernameState !== data.user.username) {
             formData.append("username", usernameState);
         }
@@ -54,8 +58,10 @@ const EditProfilePage = () => {
         if (genderState !== data.user.gender) {
             formData.append("gender", genderState);
         }
+        if (profileImageState) {
+            formData.append("profileImage", profileImageState);
+        }
 
-        formData.append("profileImage", profileImageState);
         try {
             const res = await trigger({
                 token,
@@ -66,31 +72,32 @@ const EditProfilePage = () => {
             }
         } catch (error) {
             console.log(error);
-            toast(error.response.data.message || "Error updating profile");
+            toast(error.response?.data?.message || "Error updating profile");
         }
     };
 
     if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
-    if (isLoading) return <h1 className="text-xl">loading...</h1>;
+    if (isLoading) return <h1 className="text-xl">Loading...</h1>;
+
     const { _id, username, profileImage } = data.user;
 
     return (
         <Card className={"w-full"}>
             <CardHeader>
                 <CardTitle className={"text-3xl"}>Edit Profile</CardTitle>
-                <Avatar className="w-50 h-50 m-auto">
-                    <AvatarImage src={profileImage} alt="username profileImage" className="object-cover" />
+                <Avatar className="w-40 h-40 m-auto">
+                    <AvatarImage src={previewImage} alt="User profile" className="object-cover" />
                     <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
                 </Avatar>
             </CardHeader>
             <CardContent className={"mt-10 w-full flex flex-col gap-8"}>
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="username">Username</Label>
-                    <Input placeholder="Your Username" value={usernameState} onChange={(e) => setUsernameState(e.target.value)} id="username" className="text-3xl" />
+                    <Input id="username" placeholder="Your Username" value={usernameState} onChange={(e) => setUsernameState(e.target.value)} />
                 </div>
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="bio">Bio</Label>
-                    <Input placeholder="Your Bio" value={bioState} onChange={(e) => setBioState(e.target.value)} id="bio" />
+                    <Input id="bio" placeholder="Your Bio" value={bioState} onChange={(e) => setBioState(e.target.value)} />
                 </div>
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="gender">Gender</Label>
@@ -106,8 +113,26 @@ const EditProfilePage = () => {
                 </div>
                 <div className="flex flex-col gap-2">
                     <Label htmlFor="profile">Profile Image</Label>
-                    <Input id="profile" type="file" onChange={(e) => setProfileImageState(e.target.files[0])} />
-                    {profileImageState && <p>Selected File: {profileImageState.name}</p>}
+                    <Input
+                        id="profile"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            setProfileImageState(file);
+
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                    setPreviewImage(reader.result);
+                                };
+                                reader.readAsDataURL(file);
+                            } else {
+                                setPreviewImage(data.user.profileImage);
+                            }
+                        }}
+                    />
+                    <p className="text-sm text-gray-500">{profileImageState ? `Selected File: ${profileImageState.name}` : "No file selected"}</p>
                 </div>
             </CardContent>
             <CardFooter>
