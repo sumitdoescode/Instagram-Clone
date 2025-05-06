@@ -41,7 +41,7 @@ const LeftSidebar = () => {
 
     return (
         <Sheet>
-            <SheetTrigger asChild>
+            <SheetTrigger asChild className="sticky top-0 z-50 w-full bg-stone-950">
                 <button className="p-2">
                     <AlignJustify size={24} />
                 </button>
