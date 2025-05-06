@@ -24,7 +24,9 @@ export default function ProfilePage() {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/user/${id}`, token);
+        const { data, error } = await fetchWithToken(`/user/${id}`, token);
+        if (error) throw new Error("Failed to fetch user profile");
+        return data;
     };
 
     const { data, error, isLoading } = useSWR(`/user/${id}`, fetcher);
@@ -38,24 +40,24 @@ export default function ProfilePage() {
     }, [data]);
 
     if (error) return <div>failed to get user profile</div>;
-    if (isLoading) return <div>loading...</div>;
 
     const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isFollowing, isAuthor } = data.user;
-    console.log(data);
 
     const handleToggleFollow = async () => {
         const token = await getToken();
-        const res = await fetchWithToken(`/user/followOrUnfollow/${id}`, token);
-        if (res.success) {
-            setFollowing(() => res.isFollow);
-            if (res.isFollow) {
+        const { data, error } = await fetchWithToken(`/user/followOrUnfollow/${id}`, token);
+
+        if (error || !data.success) {
+            toast("Error following/unfollowing user");
+            return;
+        }
+        if (data.success) {
+            setFollowing(data.isFollow);
+            if (data.isFollow) {
                 toast("User followed successfully");
             } else {
                 toast("User unfollowed successfully");
             }
-        } else {
-            // means api call fails then revert the ui changes
-            toast("Error following/unfollowing user");
         }
     };
 

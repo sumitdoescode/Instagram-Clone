@@ -22,41 +22,43 @@ const UpdatePost = ({ _id, caption }) => {
     const router = useRouter();
 
     const [open, setOpen] = useState(false);
-
     const [image, setImage] = useState(null);
     const [captionInput, setCaptionInput] = useState(caption);
     const [previewURL, setPreviewURL] = useState(null);
 
     const resetState = () => {
         setImage(null);
-        setCaptionInput(caption); // reset to original caption
+        setCaptionInput(caption);
         setPreviewURL(null);
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setImage(file);
-        if (file) {
-            setPreviewURL(URL.createObjectURL(file));
-        } else {
-            setPreviewURL(null);
-        }
+        setPreviewURL(file ? URL.createObjectURL(file) : null);
     };
 
     const handleUpdatePost = async () => {
         const token = await getToken();
+        if (!token) {
+            toast("Authentication error. Please log in again.");
+            return;
+        }
+
         const formData = new FormData();
-        formData.append("image", image);
+        if (image) {
+            formData.append("image", image);
+        }
         formData.append("caption", captionInput);
 
-        const res = await trigger({ token, formData });
+        const { data, error } = await trigger({ token, formData });
 
-        if (res.success) {
-            toast("Post updated successfully");
-            setOpen(false); // Close drawer
-            router.push(`/post/${_id}`);
-        } else {
+        if (error || !data?.success) {
             toast("Error while updating post");
+        } else {
+            toast("Post updated successfully");
+            setOpen(false);
+            router.push(`/post/${_id}`);
         }
     };
 
@@ -65,25 +67,26 @@ const UpdatePost = ({ _id, caption }) => {
             open={open}
             onOpenChange={(state) => {
                 setOpen(state);
-                // if (state) resetState(); // reset only when opening
+                if (state) resetState();
             }}
         >
             <DrawerTrigger asChild>
                 <Button>Update Post</Button>
             </DrawerTrigger>
+
             <DrawerContent>
                 <DrawerHeader>
                     <DrawerTitle className="font-regular text-2xl">Update Your Post</DrawerTitle>
 
                     <div className="grid gap-4 py-4 w-full">
                         <div className="grid grid-cols-4 items-center gap-4 w-full">
-                            <Input id="file" className="col-span-4" type="file" onChange={handleImageChange} required />
+                            <Input id="file" className="col-span-4" type="file" onChange={handleImageChange} />
                         </div>
 
                         {previewURL && <img src={previewURL} alt="Preview" className="mt-2 max-h-64 rounded-lg object-contain border" />}
 
                         <div className="grid grid-cols-4 gap-4 w-full">
-                            <Textarea placeholder="Type your Caption here." className="col-span-4" onChange={(e) => setCaptionInput(e.target.value)} value={captionInput} required />
+                            <Textarea placeholder="Type your caption here..." className="col-span-4" onChange={(e) => setCaptionInput(e.target.value)} value={captionInput} />
                         </div>
                     </div>
                 </DrawerHeader>
@@ -93,7 +96,9 @@ const UpdatePost = ({ _id, caption }) => {
                         {isMutating ? "Updating..." : "Update"}
                     </Button>
                     <DrawerClose asChild>
-                        <Button className="w-full">Cancel</Button>
+                        <Button className="w-full" onClick={resetState}>
+                            Cancel
+                        </Button>
                     </DrawerClose>
                 </DrawerFooter>
             </DrawerContent>

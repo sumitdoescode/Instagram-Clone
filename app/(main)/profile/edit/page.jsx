@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useAuth } from "@clerk/nextjs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,9 @@ const EditProfilePage = () => {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/user`, token);
+        const { data, error } = await fetchWithToken(`/user`, token);
+        if (error) throw new Error("Failed to fetch user profile");
+        return data;
     };
 
     const { data, error, isLoading } = useSWR(`/user`, fetcher);
@@ -39,13 +41,17 @@ const EditProfilePage = () => {
 
     const fetcher2 = async (url, { arg }) => {
         const { token, data } = arg;
-        const res = await patchWithToken(url, data, token);
-        return res;
+        return await patchWithToken(url, data, token);
     };
 
     const { trigger, isMutating } = useSWRMutation(`/user`, fetcher2);
 
     const handleEditProfile = async () => {
+        if (usernameState === data.user.username && bioState === data.user.bio && genderState === data.user.gender && !profileImageState) {
+            toast("No changes to update");
+            return;
+        }
+
         const token = await getToken();
         const formData = new FormData();
 
@@ -62,24 +68,25 @@ const EditProfilePage = () => {
             formData.append("profileImage", profileImageState);
         }
 
-        try {
-            const res = await trigger({
-                token,
-                data: formData,
-            });
-            if (res.success) {
-                toast("Profile updated successfully");
-            }
-        } catch (error) {
-            console.log(error);
-            toast(error.response?.data?.message || "Error updating profile");
+        const { data: updatedData, error } = await trigger({
+            token,
+            data: formData,
+        });
+
+        if (error || !updatedData.success) {
+            toast("Error updating profile");
+            return;
         }
+
+        mutate("/user");
+        setProfileImageState(null);
+        toast("Profile updated successfully");
     };
 
     if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
-    if (isLoading) return <h1 className="text-xl">Loading...</h1>;
+    // if (isLoading) return <h1 className="text-xl">Loading...</h1>;
 
-    const { _id, username, profileImage } = data.user;
+    const { username } = data.user;
 
     return (
         <Card className={"w-full"}>
@@ -87,7 +94,7 @@ const EditProfilePage = () => {
                 <CardTitle className={"text-3xl"}>Edit Profile</CardTitle>
                 <Avatar className="w-40 h-40 m-auto">
                     <AvatarImage src={previewImage} alt="User profile" className="object-cover" />
-                    <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">{username?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
             </CardHeader>
             <CardContent className={"mt-10 w-full flex flex-col gap-8"}>
@@ -103,7 +110,7 @@ const EditProfilePage = () => {
                     <Label htmlFor="gender">Gender</Label>
                     <Select value={genderState} onValueChange={(value) => setGenderState(value)} id="gender">
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Your Gender" />
+                            <SelectValue placeholder="Select Gender" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="male">Male</SelectItem>

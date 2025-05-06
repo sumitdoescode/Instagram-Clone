@@ -9,12 +9,15 @@ const UserPosts = ({ _id }) => {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/post/user/${_id}`, token);
+        const { data, error } = await fetchWithToken(`/post/user/${_id}`, token);
+        if (error || !data.success) {
+            throw new Error(error);
+        }
+        return data;
     };
 
     const { data, error, isLoading } = useSWR("/post", fetcher);
 
-    if (isLoading) return <h1 className="text-lg mt-10">Loading...</h1>;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching posts</h1>;
     if (!data.posts.length) return <h1 className="text-lg mt-10">User has no posts yet.</h1>;
 

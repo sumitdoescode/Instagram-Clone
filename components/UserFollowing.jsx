@@ -4,17 +4,20 @@ import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import UserFollowUnfollowCard from "./UserFollowUnfollowCard";
 
-const UserFollowers = ({ _id }) => {
+const UserFollowing = ({ _id }) => {
     const { getToken } = useAuth();
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/user/${_id}/following`, token);
+        const { data, error } = await fetchWithToken(`/user/${_id}/following`, token);
+        if (error || !data.success) {
+            throw new Error(error);
+        }
+        return data;
     };
 
     const { data, error, isLoading } = useSWR(`/user/${_id}/following`, fetcher);
 
-    if (isLoading) return <h1 className="text-lg mt-10">Loading...</h1>;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching followings</h1>;
     if (!data.following.length) return <h1 className="text-lg mt-10">No followings yet</h1>;
 
@@ -29,4 +32,4 @@ const UserFollowers = ({ _id }) => {
     );
 };
 
-export default UserFollowers;
+export default UserFollowing;

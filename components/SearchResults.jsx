@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { fetchWithToken } from "@/utils/fetcher";
 import useSWR from "swr";
@@ -13,37 +13,36 @@ const SearchResults = ({ query }) => {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/search?query=${query}`, token);
+        const { data, error } = await fetchWithToken(`/search?query=${query}`, token);
+        if (error) throw new Error("Failed to fetch search results");
+        return data;
     };
 
     const { data, error, isLoading } = useSWR(`/search?query=${query}`, fetcher);
 
-    if (isLoading) return <h1 className="text-lg mt-5">Loading...</h1>;
-    if (error) return <h1 className="text-lg mt-5">Something went wrong.</h1>;
+    // if (isLoading) return <p className="text-lg mt-5">Loading...</p>;
+    if (error) return <p className="text-lg mt-5 text-red-500">Something went wrong.</p>;
+
+    if (!data?.users?.length) return <p className="text-lg mt-5">No users found.</p>;
 
     return (
         <div className="flex flex-col gap-4 mt-5 w-full">
-            {data.users.map((user) => {
-                const { _id, username, profileImage, gender } = user;
-                return (
-                    <Card key={_id} className="pb-0 gap-0 p-2">
-                        <CardHeader className={"cursor-pointer px-1 gap-0"}>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2" onClick={() => router.push(`/profile/${_id}`)}>
-                                    <Avatar className={"w-10 h-10"}>
-                                        <AvatarImage src={profileImage.url} alt={`${username} profileImage`} size={40} />
-                                        <AvatarFallback>{username.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex flex-col">
-                                        <CardTitle className="font-medium">{username}</CardTitle>
-                                        {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
-                                    </div>
-                                </div>
+            {data.users.map(({ _id, username, profileImage, gender }) => (
+                <Card key={_id} className="p-2">
+                    <CardHeader className="px-1">
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(`/profile/${_id}`)}>
+                            <Avatar className="w-10 h-10">
+                                <AvatarImage src={profileImage?.url} alt={`${username} profile`} />
+                                <AvatarFallback>{username?.[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                                <CardTitle className="font-medium">{username}</CardTitle>
+                                {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
                             </div>
-                        </CardHeader>
-                    </Card>
-                );
-            })}
+                        </div>
+                    </CardHeader>
+                </Card>
+            ))}
         </div>
     );
 };

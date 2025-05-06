@@ -17,7 +17,9 @@ const Comments = ({ postId }) => {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/comment/post/${postId}`, token);
+        const { data, error } = await fetchWithToken(`/comment/post/${postId}`, token);
+        if (error) throw new Error("Failed to fetch comments");
+        return data;
     };
     const { data, error, isLoading, mutate } = useSWR(`/comment/post/${postId}`, fetcher);
 
@@ -37,22 +39,20 @@ const Comments = ({ postId }) => {
             return toast("Comment is required!");
         }
         const token = await getToken();
-        try {
-            const res = await trigger({ token, comment });
-            if (res.success) {
-                toast("Comment added successfully");
-            }
-            setComment("");
-        } catch (error) {
+        const { data, error } = await trigger({ token, comment });
+        if (error || !data.success) {
             toast("Error adding comment");
+            return;
         }
+        toast("Comment added successfully");
+        setComment("");
     };
 
-    if (isLoading) return <h1 className="text-3xl text-white mt-5">Loading...</h1>;
+    // if (isLoading) return <h1 className="text-3xl text-white mt-5">Loading...</h1>;
     if (error)
         return (
             <div className="mt-10">
-                <h1 className="text-5xl text-white mb-4">{error?.response?.data?.message}</h1>
+                <h1 className="text-5xl text-white mb-4">{error}</h1>
                 <Button onClick={() => router.push("/")}>Go to Home</Button>
             </div>
         );

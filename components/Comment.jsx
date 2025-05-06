@@ -29,15 +29,14 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, mutate, postId }) => 
 
     const handleDeleteComment = async () => {
         const token = await getToken();
-        try {
-            const res = await trigger(token);
-            if (res.success) {
-                toast("Comment deleted successfully");
-            }
-            mutate();
-        } catch (error) {
+
+        const { data, error } = await trigger(token);
+        if (error || !data.success) {
             toast("Error while deleting comment");
+            return;
         }
+        toast("Comment deleted successfully");
+        mutate();
     };
     return (
         <Card className="w-full p-2 gap-3">

@@ -60,19 +60,15 @@ const CreatePost = () => {
             return toast("Image and caption are required!");
         }
 
-        try {
-            const res = await trigger({ image, caption, token });
-            if (res.success) {
-                toast("Post created successfully!");
-                resetForm();
-                setOpen(false);
-                router.push("/");
-            } else {
-                toast("Error while creating post!");
-            }
-        } catch (error) {
-            toast(error.message);
+        const { data, error } = await trigger({ image, caption, token });
+        if (error || !data?.success) {
+            toast("Error while creating post!");
+            return;
         }
+        toast("Post created successfully!");
+        resetForm();
+        setOpen(false);
+        router.push("/");
     };
 
     return (

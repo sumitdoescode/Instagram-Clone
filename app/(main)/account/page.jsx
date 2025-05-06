@@ -21,7 +21,9 @@ const AccountPage = () => {
     // Fetch user data
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken("/user", token);
+        const { data, error } = await fetchWithToken("/user", token);
+        if (error) throw new Error(error);
+        return data;
     };
     const { data, error, isLoading } = useSWR("/user", fetcher);
 
@@ -35,20 +37,19 @@ const AccountPage = () => {
 
     // Handle Delete
     const handleDeleteAccount = async () => {
-        try {
-            const token = await getToken();
-            const res = await trigger(token); // 👈 token bhejna padta hai `arg` me
+        const token = await getToken();
+        const { data, error } = await trigger(token); // 👈 token bhejna padta hai `arg` me
 
-            if (res.success) {
-                toast.success("Account deleted successfully");
-                router.push("/"); // Redirect to home page
-            }
-        } catch (err) {
+        if (error || !data.success) {
             toast.error("Couldn't delete account. Try again!");
+            return;
         }
+
+        toast.success("Account deleted successfully");
+        router.push("/"); // Redirect to home page
     };
 
-    if (isLoading) return <h1 className="text-xl">Loading...</h1>;
+    // if (isLoading) return <h1 className="text-xl">Loading...</h1>;
     if (error) return <h1 className="text-xl">❌ Error fetching user</h1>;
 
     return (

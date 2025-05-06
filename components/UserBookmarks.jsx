@@ -9,12 +9,15 @@ const UserBookmarks = () => {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/user/bookmarks`, token);
+        const { data, error } = await fetchWithToken(`/user/bookmarks`, token);
+        if (error || !data.success) {
+            throw new Error(error);
+        }
+        return data;
     };
 
     const { data, error, isLoading } = useSWR("/user/bookmarks", fetcher);
 
-    if (isLoading) return <h1 className="text-xl mt-10">Loading...</h1>;
     if (error) return <h1 className="text-xl mt-10">❌ Error fetching posts</h1>;
     if (!data.bookmarks.length) return <h1 className="text-xl mt-10">User has no posts yet.</h1>;
 

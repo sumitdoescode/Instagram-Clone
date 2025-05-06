@@ -21,13 +21,15 @@ export default function OwnProfilePage() {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/user`, token);
+        const { data, error } = await fetchWithToken(`/user`, token);
+        if (error) throw new Error("Failed to fetch user profile");
+        return data;
     };
 
     const { data, error, isLoading } = useSWR(`/user`, fetcher);
 
     if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
-    if (isLoading) return <h1 className="text-xl">loading...</h1>;
+    // if (isLoading) return <h1 className="text-xl">loading...</h1>;
 
     const { _id, username, profileImage, gender, bio, email, postsCount, followersCount, followingCount } = data.user;
     console.log(data);

@@ -9,12 +9,15 @@ const UserFollowers = ({ _id }) => {
 
     const fetcher = async () => {
         const token = await getToken();
-        return await fetchWithToken(`/user/${_id}/followers`, token);
+        const { data, error } = await fetchWithToken(`/user/${_id}/followers`, token);
+        if (error || !data.success) {
+            throw new Error(error);
+        }
+        return data;
     };
 
     const { data, error, isLoading } = useSWR(`/user/${_id}/followers`, fetcher);
 
-    if (isLoading) return <h1 className="text-lg mt-10">Loading...</h1>;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching followers</h1>;
     if (!data.followers.length) return <h1 className="text-lg mt-10">No followers yet</h1>;
 

@@ -5,7 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchWithToken } from "@/utils/fetcher";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FaBookmark, FaRegBookmark, FaRegComment, FaRegHeart } from "react-icons/fa";
@@ -28,39 +28,36 @@ const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, 
 
     const { username, profileImage, gender } = author;
 
-    // Optimistic Like Toggle with API fallback
     const toggleLike = async () => {
-        const token = await getToken();
-
         try {
-            const res = await fetchWithToken(`/post/toggleLike/${_id}`, token);
+            const token = await getToken();
+            const { data, error } = await fetchWithToken(`/post/toggleLike/${_id}`, token);
 
-            if (res.success) {
-                setLiked(res.isLiked);
-                setLikeCount((prev) => (res.isLiked ? prev + 1 : prev - 1));
-            } else {
-                throw new Error("Like API failed");
+            if (error || !data.success) {
+                toast("Error liking post");
+                return;
             }
+            setLiked(data.isLiked);
+            setLikeCount((prev) => (data.isLiked ? prev + 1 : prev - 1));
         } catch (err) {
-            toast("Error liking post");
+            toast("Error occurred while liking post");
         }
     };
 
-    // Optimistic Bookmark Toggle with API fallback
     const toggleBookmark = async () => {
-        const token = await getToken();
-
         try {
-            const res = await fetchWithToken(`/post/toggleBookmark/${_id}`, token);
+            const token = await getToken();
+            const { data, error } = await fetchWithToken(`/post/toggleBookmark/${_id}`, token);
 
-            if (res.success) {
-                setBookmarked(res.isBookmarked);
-                toast(res.isBookmarked ? "Post bookmarked successfully" : "Post removed from bookmarks");
-            } else {
-                throw new Error("Bookmark API failed");
+            if (error || !data.success) {
+                toast("Error bookmarking post");
+                return;
             }
+
+            setBookmarked(data.isBookmarked);
+            toast(data.isBookmarked ? "Post bookmarked successfully" : "Post removed from bookmarks");
         } catch (err) {
-            toast("Error bookmarking post");
+            toast("Error occurred while bookmarking post");
         }
     };
 
@@ -75,7 +72,7 @@ const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, 
                             <AvatarFallback>{username.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                            <CardTitle className=" font-medium">{username}</CardTitle>
+                            <CardTitle className="font-medium">{username}</CardTitle>
                             {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
                         </div>
                     </div>

@@ -1,11 +1,13 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import LeftSidebar from "@/components/LeftSidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { dark } from "@clerk/themes";
+import { SWRConfig } from "swr";
+import { globalLoadingMiddleware } from "@/lib/swrMiddleware";
+import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -33,7 +35,12 @@ export default function RootLayout({ children }) {
                 <Toaster />
                 <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-                        {children}
+                        <GlobalLoadingProvider>
+                            <SWRConfig value={{ use: [globalLoadingMiddleware] }}>
+                                <GlobalSpinner />
+                                {children}
+                            </SWRConfig>
+                        </GlobalLoadingProvider>
                         <Toaster />
                     </ThemeProvider>
                 </body>

@@ -23,43 +23,32 @@ const UserPost = ({ _id, caption, image, author, isLiked, likesCount, commentCou
     const [likeCount, setlikeCount] = useState(likesCount);
 
     const toggleLike = async () => {
-        if (liked) {
-            // if user is already liked the post then decrement the likes count
-            setlikeCount((prev) => prev - 1);
-        } else {
-            // else increment the likes count
-            setlikeCount((prev) => prev + 1);
-        }
+        if (liked) setlikeCount((prev) => prev - 1);
+        else setlikeCount((prev) => prev + 1);
         setLiked(!liked);
+
         const token = await getToken();
-        const res = await fetchWithToken(`/post/toggleLike/${_id}`, token);
-        if (res.success) {
-        } else {
-            // means api call fails then revert the ui changes
+        const { data, error } = await fetchWithToken(`/post/toggleLike/${_id}`, token);
+
+        if (error || !data?.success) {
+            // Revert UI
             setLiked((prev) => !prev);
-            if (liked) {
-                setlikeCount((prev) => prev + 1);
-            } else {
-                setlikeCount((prev) => prev - 1);
-            }
+            setlikeCount((prev) => (liked ? prev + 1 : prev - 1));
             toast("Error liking post");
         }
     };
 
     const toggleBookmark = async () => {
         const token = await getToken();
-        const res = await fetchWithToken(`/post/toggleBookmark/${_id}`, token);
-        if (res.success) {
-            setBookmarked(res.isBookmarked);
-            if (res.isBookmarked) {
-                toast("Post bookmarked successfully");
-            } else {
-                toast("Post removed from bookmarks");
-            }
-        } else {
-            // means api call fails then revert the ui changes
+        const { data, error } = await fetchWithToken(`/post/toggleBookmark/${_id}`, token);
+
+        if (error || !data?.success) {
             toast("Error bookmarking post");
+            return;
         }
+
+        setBookmarked(data.isBookmarked);
+        toast(data.isBookmarked ? "Post bookmarked successfully" : "Post removed from bookmarks");
     };
 
     return (
