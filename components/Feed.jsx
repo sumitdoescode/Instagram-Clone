@@ -3,8 +3,8 @@ import Posts from "./Posts";
 
 const Feed = () => {
     return (
-        <div className="w-full flex justify-center">
-            <div className="w-full max-w-lg">
+        <div className="w-full max-w-lg flex justify-center">
+            <div className="w-full">
                 <Posts />
             </div>
         </div>

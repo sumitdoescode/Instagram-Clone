@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const RightSidebar = () => {
     return (
-        <Card className="hidden lg:block ml-auto w-lg max-w-full py-5">
+        <Card className="w-full max-w-md py-5 lg:sticky lg:top-12">
             <CardHeader className="px-3">
                 <CardTitle>Recommended Users</CardTitle>
             </CardHeader>
