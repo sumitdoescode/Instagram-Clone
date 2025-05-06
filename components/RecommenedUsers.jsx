@@ -17,9 +17,8 @@ const RecommendedUsers = () => {
 
     const { data, error, isLoading } = useSWR("/user/recommended", fetcher);
 
-    //   if (isLoading) return <p className="text-base mt-5">Loading...</p>;
     if (error) return <p className="text-base mt-5 text-red-500">❌ Error fetching recommended users</p>;
-    if (!data?.users?.length) return <p className="text-base mt-5">No recommended users found</p>;
+    if (!data?.users?.length) return <p className="text-base mt-5">There are no recommened users yet</p>;
 
     return (
         <div className="w-full">

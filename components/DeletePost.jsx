@@ -12,9 +12,8 @@ const deletePost = async (url, { arg: token }) => {
     return await deleteWithToken(url, token);
 };
 
-const DeletePost = ({ id }) => {
-    // Destructure id from props
-    const { trigger, isMutating } = useSWRMutation(`/post/${id}`, deletePost);
+const DeletePost = ({ _id }) => {
+    const { trigger, isMutating } = useSWRMutation(`/post/${_id}`, deletePost);
     const { getToken } = useAuth();
     const router = useRouter();
 
@@ -22,7 +21,7 @@ const DeletePost = ({ id }) => {
         const token = await getToken();
         const { data, error } = await trigger(token);
         if (error || !data.success) {
-            toast("Error while deleting post");
+            toast(error);
             return;
         }
         toast("Post deleted successfully");

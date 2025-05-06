@@ -11,7 +11,7 @@ import Section from "@/components/Section";
 import { Badge } from "@/components/ui/badge";
 import UserPosts from "@/components/UserPosts";
 import UserFollowers from "@/components/UserFollowers";
-import UserFollowings from "@/components/UserFollowings";
+import UserFollowing from "@/components/UserFollowing";
 import UserBookmarks from "@/components/UserBookmarks";
 import { useRouter } from "next/navigation";
 
@@ -28,12 +28,10 @@ export default function OwnProfilePage() {
 
     const { data, error, isLoading } = useSWR(`/user`, fetcher);
 
+    if (isLoading) return null;
     if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
-    // if (isLoading) return <h1 className="text-xl">loading...</h1>;
 
-    const { _id, username, profileImage, gender, bio, email, postsCount, followersCount, followingCount } = data.user;
-    console.log(data);
-
+    const { _id, username, profileImage, gender, bio, email, postsCount, followersCount, followingCount } = data?.user;
     return (
         <Section>
             <Card className="">
@@ -98,7 +96,7 @@ export default function OwnProfilePage() {
                             <UserFollowers _id={_id} />
                         </TabsContent>
                         <TabsContent value="followings" className={""}>
-                            <UserFollowings _id={_id} />
+                            <UserFollowing _id={_id} />
                         </TabsContent>
                         <TabsContent value="bookmarks" className={""}>
                             <UserBookmarks />

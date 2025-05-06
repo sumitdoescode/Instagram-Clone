@@ -63,7 +63,7 @@ const Page = () => {
                     {post.isAuthor && (
                         <div className="flex items-center gap-4 mt-8">
                             <UpdatePost {...post} />
-                            <DeletePost postId={id} />
+                            <DeletePost {...post} />
                         </div>
                     )}
                 </div>

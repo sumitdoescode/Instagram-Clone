@@ -18,8 +18,9 @@ const UserBookmarks = () => {
 
     const { data, error, isLoading } = useSWR("/user/bookmarks", fetcher);
 
+    if (isLoading) return null;
     if (error) return <h1 className="text-xl mt-10">❌ Error fetching posts</h1>;
-    if (!data.bookmarks.length) return <h1 className="text-xl mt-10">User has no posts yet.</h1>;
+    if (!data?.bookmarks?.length) return <h1 className="text-xl mt-10">There are no bookmarks yet..😔</h1>;
 
     return (
         <div className="mt-10 flex items-center justify-center w-full">

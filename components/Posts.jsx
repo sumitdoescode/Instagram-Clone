@@ -20,16 +20,6 @@ const Posts = () => {
 
     const { data, error, isLoading } = useSWR("/post", fetcher);
 
-    // if (isLoading) {
-    //     return (
-    //         <div className="flex flex-col gap-4 w-full">
-    //             {Array.from({ length: 3 }).map((_, i) => (
-    //                 <Skeleton key={i} className="h-40 w-full rounded-lg" />
-    //             ))}
-    //         </div>
-    //     );
-    // }
-
     if (error) {
         return (
             <div className="flex justify-center items-center h-[200px]">
@@ -39,7 +29,7 @@ const Posts = () => {
     }
 
     if (!data?.posts?.length) {
-        return <h1 className="text-xl text-center">No posts found</h1>;
+        return <h1 className="text-3xl text-center">There are no posts yet. 😔</h1>;
     }
 
     return (

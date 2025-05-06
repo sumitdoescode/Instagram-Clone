@@ -18,8 +18,9 @@ const UserFollowers = ({ _id }) => {
 
     const { data, error, isLoading } = useSWR(`/user/${_id}/followers`, fetcher);
 
+    if (isLoading) return null;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching followers</h1>;
-    if (!data.followers.length) return <h1 className="text-lg mt-10">No followers yet</h1>;
+    if (!data?.followers?.length) return <h1 className="text-lg mt-10">There are no followers yet..😔</h1>;
 
     return (
         <div className="w-full flex items-center justify-center mt-10">

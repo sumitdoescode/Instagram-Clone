@@ -14,7 +14,7 @@ import Section from "@/components/Section";
 import { Badge } from "@/components/ui/badge";
 import UserPosts from "@/components/UserPosts";
 import UserFollowers from "@/components/UserFollowers";
-import UserFollowings from "@/components/UserFollowings";
+import UserFollowing from "@/components/UserFollowing";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
@@ -39,9 +39,10 @@ export default function ProfilePage() {
         }
     }, [data]);
 
+    if (isLoading) return null;
     if (error) return <div>failed to get user profile</div>;
 
-    const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isFollowing, isAuthor } = data.user;
+    const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isFollowing, isAuthor } = data?.user;
 
     const handleToggleFollow = async () => {
         const token = await getToken();
@@ -116,9 +117,6 @@ export default function ProfilePage() {
                             <TabsTrigger className="text-xs sm:text-sm" value="followings">
                                 Followings
                             </TabsTrigger>
-                            <TabsTrigger className="text-xs sm:text-sm" value="bookmarks">
-                                Bookmarks
-                            </TabsTrigger>
                         </TabsList>
                         <TabsContent value="posts" className={""}>
                             <UserPosts _id={id} />
@@ -127,7 +125,7 @@ export default function ProfilePage() {
                             <UserFollowers _id={id} />
                         </TabsContent>
                         <TabsContent value="followings" className={""}>
-                            <UserFollowings _id={id} />
+                            <UserFollowing _id={id} />
                         </TabsContent>
                     </Tabs>
                 </CardContent>

@@ -27,16 +27,16 @@ const LeftSidebar = () => {
 
     // if (isLoading) return <h1 className="text-base">Loading...</h1>;
     if (error) return <h1 className="text-base">❌ Error fetching user</h1>;
-
+    if (!data) return null;
     const { user } = data;
 
     // Sidebar menu items
     const items = [
-        { title: "Home", url: "/", icon: Home },
-        { title: "Search", url: "/search", icon: Search },
-        { title: "Messages", url: "/message", icon: MessageCircleMore },
-        { title: "Profile", url: `/profile`, icon: User },
-        { title: "Account", url: `/account`, icon: CircleUserRound },
+        { title: "Home", url: "/", Icon: Home },
+        { title: "Search", url: "/search", Icon: Search },
+        { title: "Messages", url: "/message", Icon: MessageCircleMore },
+        { title: "Profile", url: `/profile`, Icon: User },
+        { title: "Account", url: `/account`, Icon: CircleUserRound },
     ];
 
     return (
@@ -59,10 +59,10 @@ const LeftSidebar = () => {
                 {/* Sidebar Items */}
                 <div className="px-2">
                     <div className="flex flex-col gap-4">
-                        {items.map(({ title, url, icon }) => (
+                        {items.map(({ title, url, Icon }) => (
                             <div key={title} className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md">
                                 <Link href={url} className="flex items-center gap-2">
-                                    <icon size={22} />
+                                    <Icon size={22} />
                                     <span className="text-xl">{title}</span>
                                 </Link>
                             </div>

@@ -32,7 +32,7 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, mutate, postId }) => 
 
         const { data, error } = await trigger(token);
         if (error || !data.success) {
-            toast("Error while deleting comment");
+            toast(error);
             return;
         }
         toast("Comment deleted successfully");
@@ -44,7 +44,7 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, mutate, postId }) => 
                 <div className="flex items-center justify-between">
                     <div className="cursor-pointer flex items-center gap-2" onClick={() => router.push(`/profile/${authorId}`)}>
                         <Avatar>
-                            <AvatarImage src={profileImage} />
+                            <AvatarImage src={profileImage.url} />
                             <AvatarFallback>{username.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">

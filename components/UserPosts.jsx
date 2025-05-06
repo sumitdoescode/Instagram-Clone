@@ -18,8 +18,9 @@ const UserPosts = ({ _id }) => {
 
     const { data, error, isLoading } = useSWR("/post", fetcher);
 
+    if (isLoading) return null;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching posts</h1>;
-    if (!data.posts.length) return <h1 className="text-lg mt-10">User has no posts yet.</h1>;
+    if (!data?.posts?.length) return <h1 className="text-lg mt-10">There are no posts yet..😔</h1>;
 
     return (
         <div className="mt-4 flex items-center justify-center w-full">

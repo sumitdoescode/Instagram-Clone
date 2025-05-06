@@ -48,6 +48,7 @@ export const deleteWithToken = async (url, token) => {
         });
         return { data: response.data, error: null };
     } catch (error) {
+        console.log(error.response?.data?.message || error.message || "Something went wrong");
         return { data: null, error: error.response?.data?.message || error.message || "Something went wrong" };
     }
 };
