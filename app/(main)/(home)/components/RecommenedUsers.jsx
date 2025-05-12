@@ -3,7 +3,7 @@ import React from "react";
 import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
 import { fetchWithToken } from "@/utils/fetcher";
-import UserFollowUnfollowCard from "./UserFollowUnfollowCard";
+import UserFollowUnfollowCard from "../../components/UserFollowUnfollowCard";
 
 const RecommendedUsers = () => {
     const { getToken } = useAuth();

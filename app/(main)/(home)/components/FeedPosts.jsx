@@ -3,16 +3,15 @@
 import React from "react";
 import { useAuth } from "@clerk/nextjs";
 import useSWR from "swr";
-import Post from "./Post";
+import PostCard from "../../components/PostCard";
 import { fetchWithToken } from "@/utils/fetcher";
-import { Loader2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
-const Posts = () => {
+const FeedPosts = () => {
     const { getToken } = useAuth();
 
     const fetcher = async () => {
-        const token = await getToken();
+        const token = await getToken({ template: "default" });
+        console.log(token);
         const { data, error } = await fetchWithToken("/post", token);
         if (error) throw new Error("Failed to fetch posts");
         return data;
@@ -35,10 +34,10 @@ const Posts = () => {
     return (
         <div className="flex flex-col gap-4 w-full">
             {data.posts.map((post) => (
-                <Post key={post._id} {...post} />
+                <PostCard key={post._id} {...post} />
             ))}
         </div>
     );
 };
 
-export default Posts;
+export default FeedPosts;

@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Section from "@/components/Section";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import SearchResults from "@/components/SearchResults";
+import SearchResults from "./SearchResults";
 
-const SearchPage = () => {
+const Search = () => {
     const searchParams = useSearchParams();
     const query = searchParams.get("query");
     const [searchText, setSearchText] = useState(query || "");
@@ -38,4 +38,4 @@ const SearchPage = () => {
     );
 };
 
-export default SearchPage;
+export default Search;

@@ -4,12 +4,12 @@ import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import { useAuth } from "@clerk/nextjs";
-import Post from "@/components/Post";
+import PostCard from "../../components/PostCard";
 import Section from "@/components/Section";
 import { Button } from "@/components/ui/button";
-import Comments from "@/components/Comments";
-import DeletePost from "@/components/DeletePost";
-import UpdatePost from "@/components/UpdatePost";
+import Comments from "./components/Comments";
+import UpdatePost from "./components/UpdatePost";
+import DeletePost from "./components/DeletePost";
 import Image from "next/image";
 
 const Page = () => {
@@ -57,7 +57,7 @@ const Page = () => {
             <div className="w-full flex flex-col items-center lg:flex-row lg:items-start lg:justify-between gap-16">
                 <div className="max-w-lg w-full">
                     <div className="w-full">
-                        <Post {...post} fromRendered="postDetailsPage" />
+                        <PostCard {...post} fromRendered="postDetailsPage" />
                     </div>
                     <h1 className="text-xl mt-6">{post.caption}</h1>
                     {post.isAuthor && (

@@ -9,10 +9,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Section from "@/components/Section";
 import { Badge } from "@/components/ui/badge";
-import UserPosts from "@/components/UserPosts";
-import UserFollowers from "@/components/UserFollowers";
-import UserFollowing from "@/components/UserFollowing";
-import UserBookmarks from "@/components/UserBookmarks";
+import UserPosts from "./components/UserPosts";
+import UserFollowers from "./components/UserFollowers";
+import UserFollowing from "./components/UserFollowing";
+import UserBookmarks from "./components/UserBookmarks";
 import { useRouter } from "next/navigation";
 
 export default function OwnProfilePage() {

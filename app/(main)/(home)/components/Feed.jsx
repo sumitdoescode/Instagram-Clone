@@ -1,11 +1,11 @@
 import React from "react";
-import Posts from "./Posts";
+import FeedPosts from "./FeedPosts";
 
 const Feed = () => {
     return (
         <div className="w-full max-w-lg flex justify-center">
             <div className="w-full">
-                <Posts />
+                <FeedPosts />
             </div>
         </div>
     );

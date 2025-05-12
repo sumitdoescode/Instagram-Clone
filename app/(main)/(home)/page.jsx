@@ -1,8 +1,7 @@
-import Feed from "@/components/Feed";
-import RightSidebar from "@/components/RightSidebar";
 import Section from "@/components/Section";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-// import { auth } from "@clerk/nextjs/server";
+import Feed from "./components/Feed";
+import RightSidebar from "./components/RightSidebar";
 
 const Home = async () => {
     return (

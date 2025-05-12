@@ -2,7 +2,7 @@ import React from "react";
 import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import { useAuth } from "@clerk/nextjs";
-import Post from "./Post";
+import Post from "../../components/PostCard";
 
 const UserBookmarks = () => {
     const { getToken } = useAuth();

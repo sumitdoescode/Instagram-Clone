@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy, Send } from "lucide-react";
 
-const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, isAuthor, isBookmarked, fromRendered }) => {
+const PostCard = ({ _id, caption, image, author, isLiked, likesCount, commentCount, isAuthor, isBookmarked, fromRendered }) => {
     const router = useRouter();
     const { getToken } = useAuth();
 
@@ -166,4 +166,4 @@ const Post = ({ _id, caption, image, author, isLiked, likesCount, commentCount, 
     );
 };
 
-export default Post;
+export default PostCard;

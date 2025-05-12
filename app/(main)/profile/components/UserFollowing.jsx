@@ -2,7 +2,7 @@ import React from "react";
 import { useAuth } from "@clerk/nextjs";
 import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
-import UserFollowUnfollowCard from "./UserFollowUnfollowCard";
+import UserFollowUnfollowCard from "../../components/UserFollowUnfollowCard";
 
 const UserFollowing = ({ _id }) => {
     const { getToken } = useAuth();
