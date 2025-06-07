@@ -3,6 +3,7 @@ import { useAuth } from "@clerk/nextjs";
 import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import UserFollowUnfollowCard from "../../components/UserFollowUnfollowCard";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const UserFollowing = ({ _id }) => {
     const { getToken } = useAuth();
@@ -18,7 +19,7 @@ const UserFollowing = ({ _id }) => {
 
     const { data, error, isLoading } = useSWR(`/user/${_id}/following`, fetcher);
 
-    if (isLoading) return null;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching followings</h1>;
     if (!data?.following?.length) return <h1 className="text-lg mt-10">There are no following yet..😔</h1>;
 

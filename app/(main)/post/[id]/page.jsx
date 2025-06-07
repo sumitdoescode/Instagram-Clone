@@ -11,6 +11,7 @@ import Comments from "./components/Comments";
 import UpdatePost from "./components/UpdatePost";
 import DeletePost from "./components/DeletePost";
 import Image from "next/image";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const Page = () => {
     const { id } = useParams();
@@ -27,7 +28,7 @@ const Page = () => {
     const { data, error, isLoading } = useSWR(`/post/${id}`, fetcher);
 
     if (isLoading) {
-        return <h1 className="text-3xl text-white mt-5">Loading...</h1>;
+        return <GlobalSpinner />;
     }
 
     if (error) {

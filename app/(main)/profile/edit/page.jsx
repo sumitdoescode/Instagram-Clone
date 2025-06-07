@@ -11,6 +11,7 @@ import useSWRMutation from "swr/mutation";
 import { fetchWithToken, patchWithToken } from "@/utils/fetcher";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const EditProfilePage = () => {
     const [usernameState, setUsernameState] = useState("");
@@ -83,8 +84,8 @@ const EditProfilePage = () => {
         toast("Profile updated successfully");
     };
 
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
-    // if (isLoading) return <h1 className="text-xl">Loading...</h1>;
 
     const { username } = data.user;
 

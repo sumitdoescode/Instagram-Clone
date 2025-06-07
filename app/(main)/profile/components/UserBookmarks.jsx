@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import { useAuth } from "@clerk/nextjs";
 import Post from "../../components/PostCard";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const UserBookmarks = () => {
     const { getToken } = useAuth();
@@ -18,7 +19,7 @@ const UserBookmarks = () => {
 
     const { data, error, isLoading } = useSWR("/user/bookmarks", fetcher);
 
-    if (isLoading) return null;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-xl mt-10">❌ Error fetching posts</h1>;
     if (!data?.bookmarks?.length) return <h1 className="text-xl mt-10">There are no bookmarks yet..😔</h1>;
 

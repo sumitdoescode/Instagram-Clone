@@ -4,10 +4,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { dark } from "@clerk/themes";
-import { SWRConfig } from "swr";
-import { globalLoadingMiddleware } from "@/lib/swrMiddleware";
-import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
-import GlobalSpinner from "@/components/GlobalSpinner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -35,12 +31,7 @@ export default function RootLayout({ children }) {
                 <Toaster />
                 <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-                        <GlobalLoadingProvider>
-                            <SWRConfig value={{ use: [globalLoadingMiddleware] }}>
-                                <GlobalSpinner />
-                                {children}
-                            </SWRConfig>
-                        </GlobalLoadingProvider>
+                        {children}
                         <Toaster />
                     </ThemeProvider>
                 </body>

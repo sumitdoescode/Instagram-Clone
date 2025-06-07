@@ -14,6 +14,7 @@ import UserFollowers from "./components/UserFollowers";
 import UserFollowing from "./components/UserFollowing";
 import UserBookmarks from "./components/UserBookmarks";
 import { useRouter } from "next/navigation";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 export default function OwnProfilePage() {
     const { getToken } = useAuth();
@@ -28,7 +29,7 @@ export default function OwnProfilePage() {
 
     const { data, error, isLoading } = useSWR(`/user`, fetcher);
 
-    if (isLoading) return null;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
 
     const { _id, username, profileImage, gender, bio, email, postsCount, followersCount, followingCount } = data?.user;

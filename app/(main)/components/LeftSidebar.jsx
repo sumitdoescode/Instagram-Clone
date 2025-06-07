@@ -11,6 +11,7 @@ import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AlignJustify } from "lucide-react";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const LeftSidebar = () => {
     const { getToken } = useAuth();
@@ -25,7 +26,7 @@ const LeftSidebar = () => {
 
     const { data, error, isLoading } = useSWR("/user", fetcher);
 
-    // if (isLoading) return <h1 className="text-base">Loading...</h1>;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-base">❌ Error fetching user</h1>;
     if (!data) return null;
     const { user } = data;

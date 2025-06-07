@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import dayjs from "dayjs";
 import Section from "@/components/Section";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const AccountPage = () => {
     const { getToken } = useAuth();
@@ -49,7 +50,7 @@ const AccountPage = () => {
         router.push("/"); // Redirect to home page
     };
 
-    // if (isLoading) return <h1 className="text-xl">Loading...</h1>;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-xl">❌ Error fetching user</h1>;
 
     return (

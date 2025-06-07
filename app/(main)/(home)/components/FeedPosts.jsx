@@ -5,6 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 import useSWR from "swr";
 import PostCard from "../../components/PostCard";
 import { fetchWithToken } from "@/utils/fetcher";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const FeedPosts = () => {
     const { getToken } = useAuth();
@@ -18,6 +19,8 @@ const FeedPosts = () => {
     };
 
     const { data, error, isLoading } = useSWR("/post", fetcher);
+
+    if (isLoading) return <GlobalSpinner />;
 
     if (error) {
         return (

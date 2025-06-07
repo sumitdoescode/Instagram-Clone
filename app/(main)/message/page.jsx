@@ -7,6 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@clerk/nextjs";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import UserFollowUnfollowCard from "../components/UserFollowUnfollowCard";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const Messagepage = () => {
     const { getToken } = useAuth();
@@ -20,6 +23,9 @@ const Messagepage = () => {
     };
 
     const { data, error, isLoading } = useSWR("/conversation", fetcher);
+
+    if (isLoading) {
+        return <GlobalSpinner />;
 
     if (error) {
         return (
@@ -37,12 +43,22 @@ const Messagepage = () => {
             <div>
                 <Card className={"p-2"}>
                     <CardHeader>
-                        <CardTitle>Messages ({data?.conversations?.length})</CardTitle>
+                        <CardTitle className={"text-3xl"}>Messages ({data?.conversations?.length})</CardTitle>
                     </CardHeader>
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => {
                         return (
                             <CardContent>
-                                <p>Card Content</p>
+                                <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(`/profile/${_id}`)}>
+                                    <Avatar className="w-10 h-10">
+                                        <AvatarImage src="https://github.com/shadcn.png" alt="" />
+                                        <AvatarFallback>S</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex flex-col">
+                                        <CardTitle className="font-medium">sumitdoescode</CardTitle>
+                                        {/* {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>} */}
+                                        <p>bro what's up, yeah it's been good here what about you?</p>
+                                    </div>
+                                </div>
                             </CardContent>
                         );
                     })}

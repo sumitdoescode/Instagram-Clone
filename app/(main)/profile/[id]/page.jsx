@@ -16,6 +16,7 @@ import UserPosts from "../components/UserPosts";
 import UserFollowers from "../components/UserFollowers";
 import UserFollowing from "../components/UserFollowing";
 import { useRouter } from "next/navigation";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 export default function ProfilePage() {
     const { id } = useParams();
@@ -39,7 +40,7 @@ export default function ProfilePage() {
         }
     }, [data]);
 
-    if (isLoading) return null;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <div>failed to get user profile</div>;
 
     const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isFollowing, isAuthor } = data?.user;

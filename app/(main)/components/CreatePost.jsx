@@ -11,6 +11,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { postWithToken } from "@/utils/fetcher";
 import useSWRMutation from "swr/mutation";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const createPostFn = async (url, { arg }) => {
     const { image, caption, token } = arg;

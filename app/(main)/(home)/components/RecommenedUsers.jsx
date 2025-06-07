@@ -3,6 +3,8 @@ import React from "react";
 import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
 import { fetchWithToken } from "@/utils/fetcher";
+import GlobalSpinner from "@/components/GlobalSpinner";
+
 import UserFollowUnfollowCard from "../../components/UserFollowUnfollowCard";
 
 const RecommendedUsers = () => {
@@ -16,7 +18,7 @@ const RecommendedUsers = () => {
     };
 
     const { data, error, isLoading } = useSWR("/user/recommended", fetcher);
-
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <p className="text-base mt-5 text-red-500">❌ Error fetching recommended users</p>;
     if (!data?.users?.length) return <p className="text-base mt-5">There are no recommened users yet</p>;
 

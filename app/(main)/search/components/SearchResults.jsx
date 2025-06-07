@@ -6,6 +6,7 @@ import { fetchWithToken } from "@/utils/fetcher";
 import useSWR from "swr";
 import { useAuth } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const SearchResults = ({ query }) => {
     const { getToken } = useAuth();
@@ -20,7 +21,7 @@ const SearchResults = ({ query }) => {
 
     const { data, error, isLoading } = useSWR(`/search?query=${query}`, fetcher);
 
-    // if (isLoading) return <p className="text-lg mt-5">Loading...</p>;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <p className="text-lg mt-5 text-red-500">Something went wrong.</p>;
 
     if (!data?.users?.length) return <p className="text-lg mt-5">No users found.</p>;

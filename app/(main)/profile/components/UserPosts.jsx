@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { fetchWithToken } from "@/utils/fetcher";
 import { useAuth } from "@clerk/nextjs";
 import UserPost from "./UserPost";
+import GlobalSpinner from "@/components/GlobalSpinner";
 
 const UserPosts = ({ _id }) => {
     const { getToken } = useAuth();
@@ -18,7 +19,7 @@ const UserPosts = ({ _id }) => {
 
     const { data, error, isLoading } = useSWR("/post", fetcher);
 
-    if (isLoading) return null;
+    if (isLoading) return <GlobalSpinner />;
     if (error) return <h1 className="text-lg mt-10">❌ Error fetching posts</h1>;
     if (!data?.posts?.length) return <h1 className="text-lg mt-10">There are no posts yet..😔</h1>;
 
