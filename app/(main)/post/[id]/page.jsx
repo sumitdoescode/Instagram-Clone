@@ -10,13 +10,13 @@ import { Button } from "@/components/ui/button";
 import Comments from "./components/Comments";
 import UpdatePost from "./components/UpdatePost";
 import DeletePost from "./components/DeletePost";
-import Image from "next/image";
 import GlobalSpinner from "@/components/GlobalSpinner";
 
 const Page = () => {
     const { id } = useParams();
     const router = useRouter();
     const { getToken } = useAuth();
+    console.log(id);
 
     const fetcher = async () => {
         const token = await getToken();
@@ -60,7 +60,7 @@ const Page = () => {
                     <div className="w-full">
                         <PostCard {...post} fromRendered="postDetailsPage" />
                     </div>
-                    <h1 className="text-xl mt-6">{post.caption}</h1>
+                    <h4 className="scroll-m-20 text-xl font-medium mt-5">{post.caption}</h4>
                     {post.isAuthor && (
                         <div className="flex items-center gap-4 mt-8">
                             <UpdatePost {...post} />

@@ -31,7 +31,7 @@ const FeedPosts = () => {
     }
 
     if (!data?.posts?.length) {
-        return <h1 className="text-3xl text-center">There are no posts yet. 😔</h1>;
+        return <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mt-10">There are no posts yet. 😔</h2>;
     }
 
     return (

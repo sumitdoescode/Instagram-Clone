@@ -66,8 +66,8 @@ const AccountPage = () => {
                         <AvatarFallback className="rounded-lg">{userData?.username?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="mt-4 flex flex-col items-center w-full">
-                        <CardTitle className="text-lg mt-2">{userData?.username}</CardTitle>
-                        <p className="mt-1 text-md text-gray-300">{userData?.email}</p>
+                        <h4 className="scroll-m-20 text-xl font-medium mt-2">{userData?.username}</h4>
+                        <p className="[&:not(:first-child)]:mt-1 text-white">{userData?.email}</p>
                         <div className="flex items-start gap-2 mt-6">
                             <span>Joined At:</span>
                             <p className="text-md text-gray-300">{dayjs(userData?.createdAt).format("DD MMMM YYYY")}</p>
@@ -76,10 +76,10 @@ const AccountPage = () => {
                             <span>_id:</span>
                             <p className="text-md text-gray-300 break-all text-center">{userData?._id}</p>
                         </div>
-                        <div className="flex items-start gap-2">
+                        {/* <div className="flex items-start gap-2">
                             <span>clerkId:</span>
                             <p className="text-md text-gray-300 break-all text-center max-w-full">{userData?.clerkId}</p>
-                        </div>
+                        </div> */}
                     </div>
                 </CardContent>
 

@@ -43,50 +43,53 @@ export default function OwnProfilePage() {
                             <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-center mt-4">
-                            <Badge className="text-xs rounded-lg ml-auto">Author</Badge>
-                            {/* <p className="text-sm font-semibold">{data.user.username}</p> */}
-                            <CardTitle className="text-lg mt-2">{username}</CardTitle>
-                            {gender && <p className="text-md text-gray-500">{gender === "male" ? "he/him" : "she/her"}</p>}
-                        </div>
-                        <CardContent className="mt-2">{bio}</CardContent>
-                        <p className="mt-1 text-md text-gray-300">{email}</p>
-                        <div className="flex items-center justify-center gap-2 mt-6">
-                            <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/message`)}>
-                                Message
-                            </Button>
-                            <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/profile/edit`)}>
-                                Edit Profile
-                            </Button>
-                        </div>
-                        <div className="text-xl lg:text-2xl font-normal flex items-center justify-center gap-10 lg:gap-14 mt-10">
-                            <div className="">
-                                <h2>{postsCount}</h2>
-                                <p className="text-neutral-400 text-lg">posts</p>
-                            </div>
-                            <div className="">
-                                <h2>{followersCount}</h2>
-                                <p className="text-neutral-400 text-lg">followers</p>
-                            </div>
-                            <div className="">
-                                <h2>{followingCount}</h2>
-                                <p className="text-neutral-400 text-lg ">following</p>
+                            <div className="text-center mt-4">
+                                {<Badge className="text-xs rounded-lg ml-auto">Author</Badge>}
+                                <h4 className="scroll-m-20 text-xl font-medium mt-2">{username}</h4>
+                                {gender && <p className="text-muted-foreground text-sm">{gender === "male" ? "he/him" : "she/her"}</p>}
                             </div>
                         </div>
+                        <CardDescription>
+                            <p className="[&:not(:first-child)]:mt-2 text-white">{email}</p>
+                            <blockquote className="mt-6 border-l-2 pl-6 italic max-w-md">{bio}</blockquote>
+                            <div className="flex items-center justify-center gap-2 mt-6">
+                                <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/message`)}>
+                                    Message
+                                </Button>
+                                <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/profile/edit`)}>
+                                    Edit Profile
+                                </Button>
+                            </div>
+                            <div className="text-xl lg:text-2xl font-normal flex items-center justify-center gap-10 lg:gap-14 mt-10">
+                                <div className="">
+                                    <h2>{postsCount}</h2>
+                                    <p className="text-neutral-400 text-lg">posts</p>
+                                </div>
+                                <div className="">
+                                    <h2>{followersCount}</h2>
+                                    <p className="text-neutral-400 text-lg">followers</p>
+                                </div>
+                                <div className="">
+                                    <h2>{followingCount}</h2>
+                                    <p className="text-neutral-400 text-lg ">following</p>
+                                </div>
+                            </div>
+                        </CardDescription>
                     </div>
                 </CardHeader>
-                <CardContent className={"mt-14 w-full flex items-center justify-center p-0"}>
+                <CardContent className={"mt-14 w-full flex items-center justify-center p-2"}>
                     <Tabs defaultValue="posts" className="w-full max-w-lg md:max-w-xl">
                         <TabsList className="">
-                            <TabsTrigger className="text-xs sm:text-sm" value="posts">
+                            <TabsTrigger className="text-sm" value="posts">
                                 Posts
                             </TabsTrigger>
-                            <TabsTrigger className="text-xs sm:text-sm" value="followers">
+                            <TabsTrigger className="text-sm" value="followers">
                                 Followers
                             </TabsTrigger>
-                            <TabsTrigger className="text-xs sm:text-sm" value="followings">
+                            <TabsTrigger className="text-sm" value="followings">
                                 Followings
                             </TabsTrigger>
-                            <TabsTrigger className="text-xs sm:text-sm" value="bookmarks">
+                            <TabsTrigger className="text-sm" value="bookmarks">
                                 Bookmarks
                             </TabsTrigger>
                         </TabsList>

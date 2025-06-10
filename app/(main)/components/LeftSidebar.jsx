@@ -18,7 +18,8 @@ const LeftSidebar = () => {
 
     // Fetch user data
     const fetcher = async () => {
-        const token = await getToken();
+        const token = await getToken({ template: "default" });
+        console.log(token);
         const { data, error } = await fetchWithToken("/user", token);
         if (error) throw new Error("Failed to fetch user");
         return data;
@@ -35,7 +36,7 @@ const LeftSidebar = () => {
     const items = [
         { title: "Home", url: "/", Icon: Home },
         { title: "Search", url: "/search", Icon: Search },
-        { title: "Messages", url: "/message", Icon: MessageCircleMore },
+        { title: "Conversations", url: "/conversations", Icon: MessageCircleMore },
         { title: "Profile", url: `/profile`, Icon: User },
         { title: "Account", url: `/account`, Icon: CircleUserRound },
     ];

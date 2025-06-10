@@ -58,8 +58,8 @@ const Comments = ({ postId }) => {
         );
 
     return (
-        <Card className={"w-full py-4 px-1 gap-3"}>
-            <CardHeader className={"px-3"}>
+        <Card className={"w-full p-1 gap-3"}>
+            <CardHeader className={"p-1"}>
                 <CardTitle className={"flex items-center justify-between"}>
                     <h1 className="text-lg">Comments ({data?.comments?.length || 0})</h1>
                     <AlertDialog>
@@ -80,7 +80,7 @@ const Comments = ({ postId }) => {
                     </AlertDialog>
                 </CardTitle>
             </CardHeader>
-            <CardContent className={"w-full flex flex-col gap-3 px-2"}>
+            <CardContent className={"w-full flex flex-col gap-3 p-1"}>
                 {data?.comments?.length ? data.comments.map((comment) => <Comment key={comment._id} {...comment} mutate={mutate} postId={postId} />) : <h1 className="text-lg">No comments yet</h1>}
             </CardContent>
         </Card>

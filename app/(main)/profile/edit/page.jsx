@@ -12,6 +12,7 @@ import { fetchWithToken, patchWithToken } from "@/utils/fetcher";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import Section from "@/components/Section";
 
 const EditProfilePage = () => {
     const [usernameState, setUsernameState] = useState("");
@@ -90,65 +91,67 @@ const EditProfilePage = () => {
     const { username } = data.user;
 
     return (
-        <Card className={"w-full"}>
-            <CardHeader>
-                <CardTitle className={"text-3xl"}>Edit Profile</CardTitle>
-                <Avatar className="w-40 h-40 m-auto">
-                    <AvatarImage src={previewImage} alt="User profile" className="object-cover" />
-                    <AvatarFallback className="rounded-lg">{username?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
-            </CardHeader>
-            <CardContent className={"mt-10 w-full flex flex-col gap-8"}>
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input id="username" placeholder="Your Username" value={usernameState} onChange={(e) => setUsernameState(e.target.value)} />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Input id="bio" placeholder="Your Bio" value={bioState} onChange={(e) => setBioState(e.target.value)} />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="gender">Gender</Label>
-                    <Select value={genderState} onValueChange={(value) => setGenderState(value)} id="gender">
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Gender" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="male">Male</SelectItem>
-                            <SelectItem value="female">Female</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="flex flex-col gap-2">
-                    <Label htmlFor="profile">Profile Image</Label>
-                    <Input
-                        id="profile"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            setProfileImageState(file);
+        <Section>
+            <Card className={"w-full"}>
+                <CardHeader>
+                    <CardTitle className={"text-3xl"}>Edit Profile</CardTitle>
+                    <Avatar className="w-40 h-40 m-auto">
+                        <AvatarImage src={previewImage} alt="User profile" className="object-cover" />
+                        <AvatarFallback className="rounded-lg">{username?.charAt(0) || "U"}</AvatarFallback>
+                    </Avatar>
+                </CardHeader>
+                <CardContent className={"mt-10 w-full flex flex-col gap-8"}>
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="username">Username</Label>
+                        <Input id="username" placeholder="Your Username" value={usernameState} onChange={(e) => setUsernameState(e.target.value)} />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="bio">Bio</Label>
+                        <Input id="bio" placeholder="Your Bio" value={bioState} onChange={(e) => setBioState(e.target.value)} />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="gender">Gender</Label>
+                        <Select value={genderState} onValueChange={(value) => setGenderState(value)} id="gender">
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Gender" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="male">Male</SelectItem>
+                                <SelectItem value="female">Female</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <Label htmlFor="profile">Profile Image</Label>
+                        <Input
+                            id="profile"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                setProfileImageState(file);
 
-                            if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                    setPreviewImage(reader.result);
-                                };
-                                reader.readAsDataURL(file);
-                            } else {
-                                setPreviewImage(data.user.profileImage.url);
-                            }
-                        }}
-                    />
-                    <p className="text-sm text-gray-500">{profileImageState ? `Selected File: ${profileImageState.name}` : "No file selected"}</p>
-                </div>
-            </CardContent>
-            <CardFooter>
-                <Button className={"ml-auto"} onClick={handleEditProfile} disabled={isMutating}>
-                    {isMutating ? "Saving..." : "Save Changes"}
-                </Button>
-            </CardFooter>
-        </Card>
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                        setPreviewImage(reader.result);
+                                    };
+                                    reader.readAsDataURL(file);
+                                } else {
+                                    setPreviewImage(data.user.profileImage.url);
+                                }
+                            }}
+                        />
+                        <p className="text-sm text-gray-500">{profileImageState ? `Selected File: ${profileImageState.name}` : "No file selected"}</p>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button className={"ml-auto"} onClick={handleEditProfile} disabled={isMutating}>
+                        {isMutating ? "Saving..." : "Save Changes"}
+                    </Button>
+                </CardFooter>
+            </Card>
+        </Section>
     );
 };
 

@@ -2,11 +2,7 @@ import { Suspense } from "react";
 import Search from "./components/Search";
 
 const SearchPage = () => {
-    return (
-        <Suspense fallback={<div>Loading search...</div>}>
-            <Search />
-        </Suspense>
-    );
+    return <Search />;
 };
 
 export default SearchPage;

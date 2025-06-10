@@ -23,22 +23,21 @@ const SearchResults = ({ query }) => {
 
     if (isLoading) return <GlobalSpinner />;
     if (error) return <p className="text-lg mt-5 text-red-500">Something went wrong.</p>;
-
     if (!data?.users?.length) return <p className="text-lg mt-5">No users found.</p>;
 
     return (
         <div className="flex flex-col gap-4 mt-5 w-full">
             {data.users.map(({ _id, username, profileImage, gender }) => (
-                <Card key={_id} className="p-2">
-                    <CardHeader className="px-1">
-                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push(`/profile/${_id}`)}>
-                            <Avatar className="w-10 h-10">
+                <Card key={_id} className="p-1 m-0">
+                    <CardHeader className="p-1 m-0 gap-0">
+                        <div className="flex items-center gap-5 cursor-pointer" onClick={() => router.push(`/profile/${_id}`)}>
+                            <Avatar className="w-16 h-16">
                                 <AvatarImage src={profileImage?.url} alt={`${username} profile`} />
                                 <AvatarFallback>{username?.[0]}</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col">
-                                <CardTitle className="font-medium">{username}</CardTitle>
-                                {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
+                                <CardTitle className="font-medium text-xl">{username}</CardTitle>
+                                {gender && <p className="text-sm mt-0.5">{gender === "male" ? "he/him" : "she/her"}</p>}
                             </div>
                         </div>
                     </CardHeader>

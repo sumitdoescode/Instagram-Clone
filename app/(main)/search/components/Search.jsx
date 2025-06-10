@@ -15,7 +15,9 @@ const Search = () => {
 
     // Sync input with URL query
     useEffect(() => {
-        setSearchText(query || "");
+        if (query !== searchText) {
+            setSearchText(query || "");
+        }
     }, [query]);
 
     const handleSearch = () => {
@@ -24,15 +26,16 @@ const Search = () => {
     };
 
     return (
-        <Section>
+        <Section className={"py-20"}>
             <div className="max-w-lg w-full mx-auto">
                 <div className="flex flex-col items-center gap-2 w-full">
-                    <Input type="text" placeholder="Search..." value={searchText} onChange={(e) => setSearchText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} className="text-xl" />
-                    <Button onClick={handleSearch} className="self-end">
+                    <Input type="text" placeholder="Search..." value={searchText} onChange={(e) => setSearchText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} className="" />
+
+                    <Button onClick={handleSearch} className="self-stretch md:self-endc cursor-pointer">
                         Search
                     </Button>
                 </div>
-                <SearchResults query={query} />
+                {query && <SearchResults query={query} />}
             </div>
         </Section>
     );

@@ -1,17 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { dark } from "@clerk/themes";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const dmSans = DM_Sans({
+    // variable: "--font-DM_Sans",
     subsets: ["latin"],
 });
 
@@ -29,7 +24,7 @@ export default function RootLayout({ children }) {
                 }}
             >
                 <Toaster />
-                <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+                <body className={`${dmSans.className} antialiased`}>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                         {children}
                         <Toaster />
