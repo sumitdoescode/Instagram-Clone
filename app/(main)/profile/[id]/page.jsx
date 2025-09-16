@@ -2,9 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
-import { fetchWithToken } from "@/utils/fetcher";
-import useSWR from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -18,62 +15,65 @@ import UserFollowing from "../components/UserFollowing";
 import { useRouter } from "next/navigation";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import Link from "next/link";
+import axios from "axios";
 
 // page to show user profile by id
 export default function ProfilePage() {
-    const { id } = useParams(); // this is the user id
-    const { getToken } = useAuth();
-    const router = useRouter();
-
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/user/${id}`, token);
-        if (error) throw new Error("Failed to fetch user profile");
-        return data;
-    };
-
-    const { data, error, isLoading } = useSWR(`/user/${id}`, fetcher);
-
+    const [user, setUser] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [toggling, setToggling] = useState(false);
     const [following, setFollowing] = useState(false);
+    const { id } = useParams(); // this is the user id
+
+    // const router = useRouter();
 
     useEffect(() => {
-        if (data?.user?.isFollowing !== undefined) {
-            setFollowing(data.user.isFollowing);
-        }
-    }, [data]);
-
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <div>failed to get user profile</div>;
-
-    const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isFollowing, isAuthor } = data?.user;
-
-    const handleToggleFollow = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/user/followOrUnfollow/${id}`, token);
-
-        if (error || !data.success) {
-            toast("Error following/unfollowing user");
-            return;
-        }
-        if (data.success) {
-            setFollowing(data.isFollow);
-            if (data.isFollow) {
-                toast("User followed successfully");
-            } else {
-                toast("User unfollowed successfully");
+        const fetchUser = async () => {
+            try {
+                const { data } = await axios.get(`/api/user/${id}`);
+                if (data.success) {
+                    setUser(data.user);
+                    setFollowing(data.user.isFollowing);
+                }
+            } catch (error) {
+                console.log(error);
+                toast.error("Error fetching user");
+            } finally {
+                setLoading(false);
             }
+        };
+        fetchUser();
+    }, [id]);
+
+    if (loading) return <GlobalSpinner />;
+
+    const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isAuthor } = user;
+
+    const toggleFollow = async () => {
+        try {
+            setToggling(true);
+            const { data } = await axios.get(`/api/user/followOrUnfollow/${id}`);
+            if (data.success) {
+                setFollowing(data.isFollow);
+            }
+            toast(data.isFollow ? "User followed successfully" : "User unfollowed successfully");
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setToggling(false);
         }
     };
 
     return (
         <Section>
-            <Card>
-                <CardHeader className="flex items-center justify-center">
+            <Card className={"p-4 gap-0"}>
+                <CardHeader className="flex items-center justify-center p-0">
                     <div className="text-center">
                         <Avatar className="w-50 h-50 m-auto">
-                            <AvatarImage src={profileImage.url} alt="username profileImage" />
-                            <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={profileImage?.url} alt={`${username} profile`} className={"object-cover"} />
+                            <AvatarFallback className="rounded-lg">{username?.charAt(0) || "U"}</AvatarFallback>
                         </Avatar>
+
                         <div className="text-center mt-4">
                             {isAuthor && <Badge className="text-xs rounded-lg ml-auto">Author</Badge>}
                             <h4 className="scroll-m-20 text-xl font-medium mt-2">{username}</h4>
@@ -84,37 +84,37 @@ export default function ProfilePage() {
                             <blockquote className="mt-6 border-l-2 pl-6 italic max-w-md">{bio}</blockquote>
                             <div className="flex items-center justify-center gap-2 mt-6">
                                 {!isAuthor && (
-                                    <Button className="cursor-pointer" onClick={handleToggleFollow}>
-                                        {following ? "Unfollow" : "Follow"}
+                                    <Button className="cursor-pointer" onClick={toggleFollow} disabled={toggling}>
+                                        {toggling ? "Loading..." : following ? "Unfollow" : "Follow"}
                                     </Button>
                                 )}
-                                <Link href={`/conversations/${id}`}>
-                                    {/* here id is the user id */}
-                                    <Button variant="outline" className="cursor-pointer">
-                                        Conversation
+                                {/* as you can't send message to yourself, so commented it out */}
+                                {/* <Link href={`/chat/${id}`} className="disabled">
+                                    <Button variant="outline" className="cursor-pointer disabled:cursor-not-allowed">
+                                        Chat
                                     </Button>
-                                </Link>
-                            </div>
-                            <div className="text-xl lg:text-2xl font-normal flex items-center justify-center gap-10 lg:gap-14 mt-10">
-                                <div className="">
-                                    <h2>{postsCount}</h2>
-                                    <p className="text-neutral-400 text-lg">posts</p>
-                                </div>
-                                <div className="">
-                                    <h2>{followersCount}</h2>
-                                    <p className="text-neutral-400 text-lg">followers</p>
-                                </div>
-                                <div className="">
-                                    <h2>{followingCount}</h2>
-                                    <p className="text-neutral-400 text-lg ">following</p>
-                                </div>
+                                </Link> */}
                             </div>
                         </CardDescription>
                     </div>
                 </CardHeader>
-                <CardContent className={"mt-14 w-full flex items-center justify-center p-2"}>
-                    <Tabs defaultValue="posts" className="w-full max-w-xl">
-                        <TabsList className="">
+                <CardContent className={"w-full p-0 max-w-md mx-auto"}>
+                    <div className="text-xl font-normal flex gap-4 mt-10 text-primary w-full">
+                        <div className="bg-neutral-950 rounded-xl p-2 flex flex-col items-center justify-center grow-1">
+                            <h2>{postsCount}</h2>
+                            <p className="text-neutral-400 text-base">posts</p>
+                        </div>
+                        <div className="bg-neutral-950 rounded-xl p-2 flex flex-col items-center justify-center grow-1">
+                            <h2>{followersCount}</h2>
+                            <p className="text-neutral-400 text-base">followers</p>
+                        </div>
+                        <div className="bg-neutral-950 rounded-xl p-2 flex flex-col items-center justify-center grow-1">
+                            <h2>{followingCount}</h2>
+                            <p className="text-neutral-400 text-base">following</p>
+                        </div>
+                    </div>
+                    <Tabs defaultValue="posts" className="w-full max-w-lg md:max-w-xl mt-12">
+                        <TabsList className="w-full bg-neutral-950">
                             <TabsTrigger className="text-sm" value="posts">
                                 Posts
                             </TabsTrigger>

@@ -1,34 +1,41 @@
-import React from "react";
-import useSWR from "swr";
-import { fetchWithToken } from "@/utils/fetcher";
-import { useAuth } from "@clerk/nextjs";
+import React, { useState, useEffect } from "react";
 import UserPost from "./UserPost";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import { toast } from "sonner";
+import axios from "axios";
 
 const UserPosts = ({ _id }) => {
-    const { getToken } = useAuth();
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/post/user/${_id}`, token);
-        if (error || !data.success) {
-            throw new Error(error);
+    const fetchPosts = async () => {
+        try {
+            const { data } = await axios.get(`/api/post/user/${_id}`);
+            if (data.success) {
+                setPosts(data.posts);
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Error fetching posts");
+        } finally {
+            setLoading(false);
         }
-        return data;
     };
+    useEffect(() => {
+        fetchPosts();
+    }, []);
 
-    const { data, error, isLoading } = useSWR("/post", fetcher);
+    if (loading) return <GlobalSpinner />;
 
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-lg mt-10">❌ Error fetching posts</h1>;
-    if (!data?.posts?.length) return <h1 className="text-lg mt-10">There are no posts yet..😔</h1>;
+    if (!posts?.length) return <h1 className="text-lg mt-10">There are no posts yet..😔</h1>;
 
     return (
         <div className="mt-4 flex items-center justify-center w-full">
             <div className="flex flex-col gap-6 w-full">
-                {data.posts.map((post) => {
-                    return <UserPost key={post._id} {...post} />;
-                })}
+                {posts &&
+                    posts.map((post) => {
+                        return <UserPost key={post._id} {...post} />;
+                    })}
             </div>
         </div>
     );

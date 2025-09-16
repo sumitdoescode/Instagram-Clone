@@ -1,15 +1,13 @@
-// middleware.js
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-
-const isProtectedRoute = createRouteMatcher(["/(.*)", "/account(.*)", "/message(.*)", "/post(.*)", "/profile(.*)", "/search(.*)"]);
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) await auth.protect();
+    const publicRoutes = ["/sign-in", "/sign-up"];
+
+    if (!publicRoutes.includes(req.nextUrl.pathname)) {
+        await auth.protect();
+    }
 });
 
 export const config = {
-    matcher: [
-        // protect all routes except public ones
-        "/((?!api|_next|.*\\..*|favicon.ico|sign-in|sign-up).*)",
-    ],
+    matcher: ["/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)", "/(api|trpc)(.*)"],
 };

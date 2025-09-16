@@ -1,35 +1,30 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { fetchWithToken } from "@/utils/fetcher";
 import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import useSWRMutation from "swr/mutation";
+import axios from "axios";
 
 const UserFollowUnfollowCard = ({ _id, username, profileImage, gender, followersCount, isFollowing = false, isOwnProfile }) => {
     const [following, setFollowing] = useState(isFollowing);
+    const [updating, setUpdating] = useState(false);
     const router = useRouter();
-    const { getToken } = useAuth();
-
-    const followFetcher = async (url, { arg: token }) => {
-        return await fetchWithToken(url, token); // returns { data, error }
-    };
-
-    const { trigger, isMutating } = useSWRMutation(`/user/followOrUnfollow/${_id}`, followFetcher);
 
     const followOrUnfollow = async () => {
-        const token = await getToken();
-        const { data, error } = await trigger(token);
-
-        if (error || !data?.success) {
+        try {
+            setUpdating(true);
+            const { data } = await axios.get(`/api/user/followOrUnfollow/${_id}`);
+            if (data.success) {
+                setFollowing(data.isFollow);
+            }
+            toast(data.isFollow ? "User followed successfully" : "User unfollowed successfully");
+        } catch (error) {
+            console.log(error);
             toast("Error following user");
-            return;
+        } finally {
+            setUpdating(false);
         }
-
-        setFollowing(data.isFollow);
-        toast(data.isFollow ? "User followed successfully" : "User unfollowed successfully");
     };
 
     return (
@@ -47,8 +42,8 @@ const UserFollowUnfollowCard = ({ _id, username, profileImage, gender, followers
                 </div>
             </div>
             {!isOwnProfile && (
-                <Button size="sm" className="cursor-pointer" variant="outline" onClick={followOrUnfollow} disabled={isMutating}>
-                    {isMutating ? "Loading..." : following ? "Unfollow" : "Follow"}
+                <Button size="sm" className="cursor-pointer" variant="outline" onClick={followOrUnfollow} disabled={updating}>
+                    {updating ? "Loading..." : following ? "Unfollow" : "Follow"}
                 </Button>
             )}
         </div>

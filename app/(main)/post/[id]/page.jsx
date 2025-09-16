@@ -1,9 +1,6 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import useSWR from "swr";
-import { fetchWithToken } from "@/utils/fetcher";
-import { useAuth } from "@clerk/nextjs";
 import PostCard from "../../components/PostCard";
 import Section from "@/components/Section";
 import { Button } from "@/components/ui/button";
@@ -11,38 +8,41 @@ import Comments from "./components/Comments";
 import UpdatePost from "./components/UpdatePost";
 import DeletePost from "./components/DeletePost";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import axios from "axios";
 
 const Page = () => {
+    const [post, setPost] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [notFound, setNotFound] = useState(false);
     const { id } = useParams();
     const router = useRouter();
-    const { getToken } = useAuth();
-    console.log(id);
 
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/post/${id}`, token);
-        if (error) throw new Error("Failed to fetch post details");
-        return data;
-    };
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const { data } = await axios.get(`/api/post/${id}`);
+                if (data.success) {
+                    setPost(data.post);
+                }
+            } catch (error) {
+                if (error.response.status === 404) {
+                    setNotFound(true);
+                    return;
+                }
+                console.log(error);
+                toast.error("Error fetching post");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPost();
+    }, []);
 
-    const { data, error, isLoading } = useSWR(`/post/${id}`, fetcher);
-
-    if (isLoading) {
+    if (loading) {
         return <GlobalSpinner />;
     }
 
-    if (error) {
-        return (
-            <div className="mt-10 flex flex-col items-center gap-6">
-                <h1 className="text-4xl text-white font-semibold">Error loading post</h1>
-                <Button onClick={() => router.push("/")}>Go to Home</Button>
-            </div>
-        );
-    }
-
-    const post = data?.post;
-
-    if (!post) {
+    if (notFound) {
         return (
             <div className="mt-10 flex flex-col items-center gap-6 text-center">
                 {/* <Image src="/not-found.png" alt="Post not found" width={300} height={300} /> */}

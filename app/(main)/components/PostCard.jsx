@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchWithToken } from "@/utils/fetcher";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,59 +15,67 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy, Send } from "lucide-react";
+import axios from "axios";
 
 const PostCard = ({ _id, caption, image, author, isLiked, likesCount, commentCount, isAuthor, isBookmarked, fromRendered }) => {
     const router = useRouter();
-    const { getToken } = useAuth();
 
     const [liked, setLiked] = useState(isLiked);
     const [bookmarked, setBookmarked] = useState(isBookmarked);
     const [likeCount, setLikeCount] = useState(likesCount);
+    const [liking, setLiking] = useState(false);
+    const [bookmarking, setBookmarking] = useState(false);
+    const [postUrl, setPostUrl] = useState("");
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setPostUrl(`${window.location.origin}/post/${_id}`);
+        }
+    }, [_id]);
 
     const { username, profileImage, gender } = author;
 
     const toggleLike = async () => {
         try {
-            const token = await getToken();
-            const { data, error } = await fetchWithToken(`/post/toggleLike/${_id}`, token);
-
-            if (error || !data.success) {
-                toast("Error liking post");
-                return;
+            setLiking(true);
+            const { data } = await axios.get(`/api/post/toggleLike/${_id}`);
+            if (data.success) {
+                setLiked(data.isLiked);
+                setLikeCount((prev) => (data.isLiked ? prev + 1 : prev - 1));
             }
-            setLiked(data.isLiked);
-            setLikeCount((prev) => (data.isLiked ? prev + 1 : prev - 1));
-        } catch (err) {
+        } catch (error) {
+            console.log(error);
             toast("Error occurred while liking post");
+        } finally {
+            setLiking(false);
         }
     };
 
     const toggleBookmark = async () => {
         try {
-            const token = await getToken();
-            const { data, error } = await fetchWithToken(`/post/toggleBookmark/${_id}`, token);
-
-            if (error || !data.success) {
-                toast("Error bookmarking post");
-                return;
+            setBookmarking(true);
+            const { data } = await axios.get(`/api/post/toggleBookmark/${_id}`);
+            if (data.success) {
+                setBookmarked(data.isBookmarked);
             }
-
-            setBookmarked(data.isBookmarked);
             toast(data.isBookmarked ? "Post bookmarked successfully" : "Post removed from bookmarks");
         } catch (err) {
+            console.log(err);
             toast("Error occurred while bookmarking post");
+        } finally {
+            setBookmarking(false);
         }
     };
 
     return (
-        <Card className="w-full pt-3 py-5 gap-3">
-            <CardHeader className="px-2">
+        <Card className="w-full p-3 gap-3">
+            <CardHeader className="p-0">
                 <div className="flex items-center justify-between">
                     {/* Profile Info */}
                     <div className="cursor-pointer flex items-center gap-2" onClick={() => router.push(`/profile/${author._id}`)}>
                         <Avatar>
                             <AvatarImage src={profileImage?.url} />
-                            <AvatarFallback>{username.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{username?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                             <CardTitle className="font-medium">{username}</CardTitle>
@@ -84,16 +90,18 @@ const PostCard = ({ _id, caption, image, author, isLiked, likesCount, commentCou
 
             {/* Post Image (safe rendering) */}
             {image?.url && (
-                <CardContent onClick={() => router.push(`/post/${_id}`)} className="cursor-pointer px-2">
+                <CardContent onClick={() => router.push(`/post/${_id}`)} className="cursor-pointer p-0">
                     <Image src={image.url} width={400} height={400} alt="Post image" className="w-full rounded-lg object-cover" priority />
                 </CardContent>
             )}
 
-            <CardFooter className="block px-3 mt-5">
+            <CardFooter className="block p-0 mt-5">
                 <div className="flex items-center justify-between w-full">
                     {/* Like, Comment, Share Buttons */}
                     <div className="flex items-center gap-3">
-                        <div onClick={toggleLike}>{liked ? <FcLike size={24} className="cursor-pointer" /> : <FaRegHeart className="cursor-pointer" size={22} />}</div>
+                        <button className="bg-none border-none" onClick={toggleLike} disabled={liking}>
+                            {liked ? <FcLike size={24} className="cursor-pointer" /> : <FaRegHeart className="cursor-pointer" size={22} />}
+                        </button>
 
                         {fromRendered !== "postDetailsPage" && <FaRegComment className="cursor-pointer" size={22} onClick={() => router.push(`/post/${_id}`)} />}
 
@@ -121,10 +129,12 @@ const PostCard = ({ _id, caption, image, author, isLiked, likesCount, commentCou
                                         size="sm"
                                         className="px-3 cursor-pointer"
                                         onClick={() => {
-                                            navigator.clipboard
-                                                .writeText(`${window.location.origin}/post/${_id}`)
-                                                .then(() => toast("Link copied to clipboard!"))
-                                                .catch(() => toast("Failed to copy the link."));
+                                            if (postUrl) {
+                                                navigator.clipboard
+                                                    .writeText(postUrl)
+                                                    .then(() => toast("Link copied!"))
+                                                    .catch(() => toast("Failed to copy"));
+                                            }
                                         }}
                                     >
                                         <span className="sr-only">Copy</span>
@@ -144,7 +154,9 @@ const PostCard = ({ _id, caption, image, author, isLiked, likesCount, commentCou
                     </div>
 
                     {/* Bookmark */}
-                    <div onClick={toggleBookmark}>{bookmarked ? <FaBookmark size={24} className="cursor-pointer" /> : <FaRegBookmark size={24} className="cursor-pointer" />}</div>
+                    <button className="bg-none border-none" onClick={toggleBookmark} disabled={bookmarking}>
+                        {bookmarked ? <FaBookmark size={24} className="cursor-pointer" /> : <FaRegBookmark size={24} className="cursor-pointer" />}
+                    </button>
                 </div>
 
                 {/* Likes count */}

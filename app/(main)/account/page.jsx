@@ -1,10 +1,6 @@
 "use client";
 
-import React from "react";
-import { fetchWithToken, deleteWithToken } from "@/utils/fetcher";
-import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
-import { useAuth } from "@clerk/nextjs";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
@@ -14,76 +10,61 @@ import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
 import dayjs from "dayjs";
 import Section from "@/components/Section";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import axios from "axios";
+import { useUserContext } from "@/contexts/UserContextProvider";
 
 const AccountPage = () => {
-    const { getToken } = useAuth();
+    const { user, loading } = useUserContext();
+    const [deleting, setDeleting] = useState(false);
     const router = useRouter();
 
-    // Fetch user data
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken("/user", token);
-        if (error) throw new Error(error);
-        return data;
-    };
-    const { data, error, isLoading } = useSWR("/user", fetcher);
-
-    const { user: userData } = data || {};
-
-    // Delete account mutation
-    const deleteAccount = async (url, { arg: token }) => {
-        return await deleteWithToken(url, token);
-    };
-    const { trigger, isMutating } = useSWRMutation("/user", deleteAccount);
-
-    // Handle Delete
-    const handleDeleteAccount = async () => {
-        const token = await getToken();
-        const { data, error } = await trigger(token); // 👈 token bhejna padta hai `arg` me
-
-        if (error || !data.success) {
+    const deleteAccount = async () => {
+        try {
+            setDeleting(true);
+            const { data } = await axios.delete("/api/user");
+            if (data.success) {
+                toast.success("Account deleted successfully");
+                router.push("/"); // Redirect to home page
+            }
+        } catch (error) {
+            console.log(error);
             toast.error("Couldn't delete account. Try again!");
-            return;
+        } finally {
+            setDeleting(false);
         }
-
-        toast.success("Account deleted successfully");
-        router.push("/"); // Redirect to home page
     };
 
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-xl">❌ Error fetching user</h1>;
+    if (loading) return <GlobalSpinner />;
+    if (!user) return null;
 
     return (
         <Section>
-            <Card className="w-full">
-                <CardHeader>
+            <Card className="w-full p-4">
+                <CardHeader className={"p-0"}>
                     <CardTitle className="text-2xl md:text-3xl">Account Settings</CardTitle>
                 </CardHeader>
 
-                <CardContent className={"max-w-lg w-full mx-auto"}>
+                <CardContent className={"max-w-lg w-full mx-auto p-0"}>
                     <Avatar className="w-50 h-50 m-auto">
-                        <AvatarImage src={userData?.profileImage.url} alt="" />
-                        <AvatarFallback className="rounded-lg">{userData?.username?.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={user?.profileImage?.url} alt="" className={"object-cover"} />
+                        <AvatarFallback className="rounded-lg">{user?.username?.charAt(0)}</AvatarFallback>
                     </Avatar>
+
                     <div className="mt-4 flex flex-col items-center w-full">
-                        <h4 className="scroll-m-20 text-xl font-medium mt-2">{userData?.username}</h4>
-                        <p className="[&:not(:first-child)]:mt-1 text-white">{userData?.email}</p>
+                        <h4 className="scroll-m-20 text-xl font-medium mt-2">{user?.username}</h4>
+                        <p className="[&:not(:first-child)]:mt-1 text-white">{user?.email}</p>
                         <div className="flex items-start gap-2 mt-6">
                             <span>Joined At:</span>
-                            <p className="text-md text-gray-300">{dayjs(userData?.createdAt).format("DD MMMM YYYY")}</p>
+                            <p className="text-md text-gray-300">{dayjs(user?.createdAt).format("DD MMMM YYYY")}</p>
                         </div>
                         <div className="flex items-start gap-2">
                             <span>_id:</span>
-                            <p className="text-md text-gray-300 break-all text-center">{userData?._id}</p>
+                            <p className="text-md text-gray-300 break-all text-center">{user?._id}</p>
                         </div>
-                        {/* <div className="flex items-start gap-2">
-                            <span>clerkId:</span>
-                            <p className="text-md text-gray-300 break-all text-center max-w-full">{userData?.clerkId}</p>
-                        </div> */}
                     </div>
                 </CardContent>
 
-                <CardFooter>
+                <CardFooter className={"p-0"}>
                     <AlertDialog>
                         <AlertDialogTrigger className="mx-auto">
                             <Button className="cursor-pointer" variant="destructive">
@@ -99,8 +80,8 @@ const AccountPage = () => {
 
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDeleteAccount} className="cursor-pointer" disabled={isMutating}>
-                                    {isMutating ? "Deleting..." : "Continue"}
+                                <AlertDialogAction onClick={deleteAccount} className="cursor-pointer" disabled={deleting}>
+                                    {deleting ? "Deleting..." : "Continue"}
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>

@@ -7,33 +7,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { BadgePlus } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { postWithToken } from "@/utils/fetcher";
-import useSWRMutation from "swr/mutation";
 import GlobalSpinner from "@/components/GlobalSpinner";
-
-const createPostFn = async (url, { arg }) => {
-    const { image, caption, token } = arg;
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("caption", caption);
-
-    const res = await postWithToken(url, formData, token);
-    return res;
-};
+import axios from "axios";
 
 const CreatePost = () => {
     const [open, setOpen] = useState(false);
     const [image, setImage] = useState(null);
     const [caption, setCaption] = useState("");
     const [previewURL, setPreviewURL] = useState(null);
-
-    const fileInputRef = useRef(null);
-    const { getToken } = useAuth();
+    const [posting, setPosting] = useState(false);
     const router = useRouter();
 
-    const { trigger, isMutating } = useSWRMutation("/post", createPostFn);
+    const fileInputRef = useRef(null);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -54,22 +40,36 @@ const CreatePost = () => {
         }
     };
 
-    const handleCreatePost = async () => {
-        const token = await getToken();
+    const createPost = async () => {
+        try {
+            setPosting(true);
 
+            const formData = new FormData();
+            formData.append("caption", caption);
+            formData.append("image", image);
+            const { data } = await axios.post("/api/post", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            if (data.success) {
+                toast("Post created successfully!");
+                resetForm();
+                setOpen(false);
+                router.push("/");
+            }
+        } catch (error) {
+            console.log(error);
+            toast("Error while creating post!");
+        } finally {
+            setPosting(false);
+        }
+    };
+
+    const handleCreatePost = async () => {
         if (!image || !caption.trim()) {
             return toast("Image and caption are required!");
         }
-
-        const { data, error } = await trigger({ image, caption, token });
-        if (error || !data?.success) {
-            toast("Error while creating post!");
-            return;
-        }
-        toast("Post created successfully!");
-        resetForm();
-        setOpen(false);
-        router.push("/");
+        createPost();
     };
 
     return (
@@ -95,8 +95,8 @@ const CreatePost = () => {
                 </div>
 
                 <DialogFooter>
-                    <Button type="submit" onClick={handleCreatePost} disabled={isMutating}>
-                        {isMutating ? "Posting..." : "Create Post"}
+                    <Button type="submit" onClick={handleCreatePost} disabled={posting}>
+                        {posting ? "Posting..." : "Create Post"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

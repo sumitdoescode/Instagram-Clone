@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { dark } from "@clerk/themes";
+import UserContextProvider from "@/contexts/UserContextProvider";
 
 const dmSans = DM_Sans({
     // variable: "--font-DM_Sans",
@@ -23,10 +24,9 @@ export default function RootLayout({ children }) {
                     baseTheme: dark,
                 }}
             >
-                <Toaster />
                 <body className={`${dmSans.className} antialiased`}>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-                        {children}
+                        <UserContextProvider>{children}</UserContextProvider>
                         <Toaster />
                     </ThemeProvider>
                 </body>

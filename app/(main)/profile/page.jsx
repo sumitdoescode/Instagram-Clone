@@ -1,8 +1,5 @@
 "use client";
-import React from "react";
-import { useAuth } from "@clerk/nextjs";
-import { fetchWithToken } from "@/utils/fetcher";
-import useSWR from "swr";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,31 +12,22 @@ import UserFollowing from "./components/UserFollowing";
 import UserBookmarks from "./components/UserBookmarks";
 import { useRouter } from "next/navigation";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import { useUserContext } from "@/contexts/UserContextProvider";
 
 export default function OwnProfilePage() {
-    const { getToken } = useAuth();
+    const { user, loading } = useUserContext();
     const router = useRouter();
 
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/user`, token);
-        if (error) throw new Error("Failed to fetch user profile");
-        return data;
-    };
+    if (loading) return <GlobalSpinner />;
 
-    const { data, error, isLoading } = useSWR(`/user`, fetcher);
-
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-xl">Failed to Get Own User Profile</h1>;
-
-    const { _id, username, profileImage, gender, bio, email, postsCount, followersCount, followingCount } = data?.user;
+    const { _id, username, profileImage, gender, bio, email, postsCount, followersCount, followingCount } = user;
     return (
         <Section>
-            <Card className="">
-                <CardHeader className="flex items-center justify-center">
+            <Card className="p-4 gap-0">
+                <CardHeader className="flex items-center justify-center p-0">
                     <div className="text-center">
                         <Avatar className="w-50 h-50 m-auto">
-                            <AvatarImage src={profileImage.url} alt="username profileImage" />
+                            <AvatarImage src={profileImage.url} className={"object-cover"} alt="username profileImage" />
                             <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-center mt-4">
@@ -53,33 +41,35 @@ export default function OwnProfilePage() {
                             <p className="[&:not(:first-child)]:mt-2 text-white">{email}</p>
                             <blockquote className="mt-6 border-l-2 pl-6 italic max-w-md">{bio}</blockquote>
                             <div className="flex items-center justify-center gap-2 mt-6">
-                                <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/message`)}>
-                                    Message
-                                </Button>
+                                {/* as you can't send message to yourself, so commented it out */}
+                                {/* <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/chat`)}>
+                                    Chat
+                                </Button> */}
                                 <Button variant="outline" className="cursor-pointer" onClick={() => router.push(`/profile/edit`)}>
                                     Edit Profile
                                 </Button>
                             </div>
-                            <div className="text-xl lg:text-2xl font-normal flex items-center justify-center gap-10 lg:gap-14 mt-10">
-                                <div className="">
-                                    <h2>{postsCount}</h2>
-                                    <p className="text-neutral-400 text-lg">posts</p>
-                                </div>
-                                <div className="">
-                                    <h2>{followersCount}</h2>
-                                    <p className="text-neutral-400 text-lg">followers</p>
-                                </div>
-                                <div className="">
-                                    <h2>{followingCount}</h2>
-                                    <p className="text-neutral-400 text-lg ">following</p>
-                                </div>
-                            </div>
                         </CardDescription>
                     </div>
                 </CardHeader>
-                <CardContent className={"mt-14 w-full flex items-center justify-center p-2"}>
-                    <Tabs defaultValue="posts" className="w-full max-w-lg md:max-w-xl">
-                        <TabsList className="">
+                <CardContent className={"w-full p-0 max-w-md mx-auto"}>
+                    <div className="text-xl font-normal flex gap-4 mt-10 text-primary w-full">
+                        <div className="bg-neutral-950 rounded-xl p-4 flex flex-col items-center justify-center gap-0 grow-1">
+                            <h2>{postsCount}</h2>
+                            <p className="text-neutral-400 text-base">posts</p>
+                        </div>
+                        <div className="bg-neutral-950 rounded-xl p-2 flex flex-col items-center justify-center gap-0 grow-1">
+                            <h2>{followersCount}</h2>
+                            <p className="text-neutral-400 text-base">followers</p>
+                        </div>
+                        <div className="bg-neutral-950 rounded-xl p-2 flex flex-col items-center justify-center gap-0 grow-1">
+                            <h2>{followingCount}</h2>
+                            <p className="text-neutral-400 text-base">following</p>
+                        </div>
+                    </div>
+                    <Tabs defaultValue="posts" className="w-full max-w-lg md:max-w-xl mt-12">
+                        <TabsList className="w-full bg-neutral-950">
+                            {/* <TabsList className="sticky top-12 z-50 w-full flex justify-around bg-neutral-950 border-b rounded-none"> */}
                             <TabsTrigger className="text-sm" value="posts">
                                 Posts
                             </TabsTrigger>
@@ -93,18 +83,21 @@ export default function OwnProfilePage() {
                                 Bookmarks
                             </TabsTrigger>
                         </TabsList>
-                        <TabsContent value="posts">
-                            <UserPosts _id={_id} />
-                        </TabsContent>
-                        <TabsContent value="followers" className={""}>
-                            <UserFollowers _id={_id} />
-                        </TabsContent>
-                        <TabsContent value="followings" className={""}>
-                            <UserFollowing _id={_id} />
-                        </TabsContent>
-                        <TabsContent value="bookmarks" className={""}>
-                            <UserBookmarks />
-                        </TabsContent>
+                        {/* 👇 Add margin/padding so content starts lower */}
+                        <div className="mt-4">
+                            <TabsContent value="posts">
+                                <UserPosts _id={_id} />
+                            </TabsContent>
+                            <TabsContent value="followers">
+                                <UserFollowers _id={_id} />
+                            </TabsContent>
+                            <TabsContent value="followings">
+                                <UserFollowing _id={_id} />
+                            </TabsContent>
+                            <TabsContent value="bookmarks">
+                                <UserBookmarks />
+                            </TabsContent>
+                        </div>
                     </Tabs>
                 </CardContent>
             </Card>

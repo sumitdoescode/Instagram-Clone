@@ -1,42 +1,29 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import Link from "next/link";
 import { Home, Search, MessageCircleMore, User, LogOut, CircleUserRound } from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
 import CreatePost from "./CreatePost";
-import { fetchWithToken } from "@/utils/fetcher";
-import useSWR from "swr";
-import { useAuth } from "@clerk/nextjs";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AlignJustify } from "lucide-react";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import axios from "axios";
+import { toast } from "sonner";
+import { useUserContext } from "@/contexts/UserContextProvider";
 
 const LeftSidebar = () => {
-    const { getToken } = useAuth();
+    const { user, loading } = useUserContext();
 
-    // Fetch user data
-    const fetcher = async () => {
-        const token = await getToken({ template: "default" });
-        console.log(token);
-        const { data, error } = await fetchWithToken("/user", token);
-        if (error) throw new Error("Failed to fetch user");
-        return data;
-    };
-
-    const { data, error, isLoading } = useSWR("/user", fetcher);
-
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-base">❌ Error fetching user</h1>;
-    if (!data) return null;
-    const { user } = data;
+    if (loading) return <GlobalSpinner />;
+    if (!user) return null;
 
     // Sidebar menu items
     const items = [
         { title: "Home", url: "/", Icon: Home },
         { title: "Search", url: "/search", Icon: Search },
-        { title: "Conversations", url: "/conversations", Icon: MessageCircleMore },
+        { title: "Chat", url: "/chat", Icon: MessageCircleMore },
         { title: "Profile", url: `/profile`, Icon: User },
         { title: "Account", url: `/account`, Icon: CircleUserRound },
     ];
@@ -91,8 +78,8 @@ const LeftSidebar = () => {
                 <SheetFooter>
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                         <Avatar className="h-8 w-8 rounded-lg">
-                            <AvatarImage src={user?.profileImage?.url} alt={user?.username} />
-                            <AvatarFallback>{user?.username.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={user?.profileImage?.url} alt={user?.username} className={"object-cover"} />
+                            <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-semibold">{user?.username}</span>

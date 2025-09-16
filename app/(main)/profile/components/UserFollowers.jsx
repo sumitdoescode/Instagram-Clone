@@ -1,32 +1,45 @@
-import React from "react";
-import { useAuth } from "@clerk/nextjs";
-import useSWR from "swr";
-import { fetchWithToken } from "@/utils/fetcher";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import UserFollowUnfollowCard from "../../components/UserFollowUnfollowCard";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import { toast } from "sonner";
+import axios from "axios";
 
 const UserFollowers = ({ _id }) => {
-    const { getToken } = useAuth();
+    const [followers, setFollowers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/user/${_id}/followers`, token);
-        if (error || !data.success) {
-            throw new Error(error);
-        }
-        return data;
-    };
+    useEffect(() => {
+        const fetchFollowers = async () => {
+            try {
+                const { data } = await axios.get(`/api/user/${_id}/followers`);
+                if (data.success) {
+                    setFollowers(data.followers);
+                }
+            } catch (error) {
+                console.log(error);
+                toast.error("Error fetching followers");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFollowers();
+    }, [_id]);
 
-    const { data, error, isLoading } = useSWR(`/user/${_id}/followers`, fetcher);
+    if (loading) return <GlobalSpinner />;
 
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-lg mt-10">❌ Error fetching followers</h1>;
-    if (!data?.followers?.length) return <h1 className="text-lg mt-10">There are no followers yet..😔</h1>;
+    if (!followers?.length)
+        return (
+            <div className="mt-10 flex items-center justify-center w-full">
+                <h1 className="text-lg text-center">There are no followers yet.. 😔</h1>
+            </div>
+        );
 
     return (
         <div className="w-full flex items-center justify-center mt-10">
             <div className="flex flex-col items-center gap-6 w-full">
-                {data.followers.map((follower) => {
+                {followers.map((follower) => {
                     return <UserFollowUnfollowCard key={follower._id} {...follower} />;
                 })}
             </div>

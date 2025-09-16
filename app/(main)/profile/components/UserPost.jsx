@@ -1,69 +1,77 @@
 "use client";
 import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchWithToken } from "@/utils/fetcher";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { FaBookmark, FaRegBookmark, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { FcLike } from "react-icons/fc";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy, Send } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const UserPost = ({ _id, caption, image, author, isLiked, likesCount, commentCount, isAuthor, isBookmarked }) => {
     const router = useRouter();
-    const { getToken } = useAuth();
     const [liked, setLiked] = useState(isLiked);
     const [bookmarked, setBookmarked] = useState(isBookmarked);
-    const [likeCount, setlikeCount] = useState(likesCount);
+    const [likeCount, setLikeCount] = useState(likesCount);
+    const [liking, setLiking] = useState(false);
+    const [bookmarking, setBookmarking] = useState(false);
 
     const toggleLike = async () => {
-        if (liked) setlikeCount((prev) => prev - 1);
-        else setlikeCount((prev) => prev + 1);
-        setLiked(!liked);
-
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/post/toggleLike/${_id}`, token);
-
-        if (error || !data?.success) {
-            // Revert UI
-            setLiked((prev) => !prev);
-            setlikeCount((prev) => (liked ? prev + 1 : prev - 1));
-            toast("Error liking post");
+        try {
+            setLiking(true);
+            const { data } = await axios.post(`/api/post/toggleLike/${_id}`);
+            if (data.success) {
+                setLiked(data.isLiked);
+                setLikeCount((prev) => (data.isLiked ? prev + 1 : prev - 1));
+            }
+        } catch (error) {
+            console.log(error);
+            toast("Error occurred while liking post");
+        } finally {
+            setLiking(false);
         }
     };
 
     const toggleBookmark = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/post/toggleBookmark/${_id}`, token);
-
-        if (error || !data?.success) {
-            toast("Error bookmarking post");
-            return;
+        try {
+            setBookmarking(true);
+            const { data } = await axios.post(`/api/post/toggleBookmark/${_id}`);
+            if (data.success) {
+                setBookmarked(data.isBookmarked);
+            }
+            toast(data.isBookmarked ? "Post bookmarked successfully" : "Post removed from bookmarks");
+        } catch (err) {
+            console.log(err);
+            toast("Error occurred while bookmarking post");
+        } finally {
+            setBookmarking(false);
         }
-
-        setBookmarked(data.isBookmarked);
-        toast(data.isBookmarked ? "Post bookmarked successfully" : "Post removed from bookmarks");
     };
 
     return (
-        <Card className="w-full p-2">
+        <Card className="w-full p-3">
             <CardContent onClick={() => router.push(`/post/${_id}`)} className="cursor-pointer p-0">
                 <Image src={image.url} width={400} height={400} alt="Picture of the author" className="w-full object-cover rounded-md" />
             </CardContent>
 
-            <CardFooter className="block p-3 pb-5 pt-0">
+            <CardFooter className="block p-0">
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center gap-3">
-                        <div onClick={toggleLike}>{liked ? <FcLike size={24} className="cursor-pointer" /> : <FaRegHeart className="cursor-pointer" size={22} />}</div>
+                        {/* like button */}
+                        <button className="bg-none border-none" onClick={toggleLike} disabled={liking}>
+                            {liked ? <FcLike size={24} className="cursor-pointer" /> : <FaRegHeart className="cursor-pointer" size={22} />}
+                        </button>
+
+                        {/* comment button */}
                         <FaRegComment className="cursor-pointer" size={22} onClick={() => router.push(`/post/${_id}`)} />
                         <Dialog>
-                            <DialogTrigger asChild classMame="cursor-pointer">
+                            <DialogTrigger asChild className="cursor-pointer">
                                 <Send />
 
                                 {/* <Button variant="outline">Share</Button> */}
@@ -109,12 +117,22 @@ const UserPost = ({ _id, caption, image, author, isLiked, likesCount, commentCou
                             </DialogContent>
                         </Dialog>
                     </div>
-                    <div onClick={toggleBookmark}>{bookmarked ? <FaBookmark size={24} className="cursor-pointer" /> : <FaRegBookmark size={24} className="cursor-pointer" />}</div>
+
+                    {/* bookmark button */}
+                    <button className="bg-none border-none" onClick={toggleBookmark} disabled={bookmarking}>
+                        {bookmarked ? <FaBookmark size={24} className="cursor-pointer" /> : <FaRegBookmark size={24} className="cursor-pointer" />}
+                    </button>
                 </div>
+
+                {/* likes count */}
                 <p className="text-sm text-gray-300 mt-2 font-medium">
                     {likeCount} {likeCount === 1 ? "like" : "likes"}
                 </p>
+
+                {/* caption */}
                 <p className="mt-3 text-gray-300 text-sm">{caption.length > 50 ? `${caption.slice(0, 50)}...` : caption}</p>
+
+                {/* view all comments button */}
                 <Link href={`/post/${_id}`} className="inline-block text-sm text-gray-300 mt-4 hover:underline">
                     View all {commentCount > 0 && commentCount} comments
                 </Link>

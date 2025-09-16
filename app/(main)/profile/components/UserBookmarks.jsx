@@ -1,34 +1,48 @@
-import React from "react";
-import useSWR from "swr";
-import { fetchWithToken } from "@/utils/fetcher";
-import { useAuth } from "@clerk/nextjs";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Post from "../../components/PostCard";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import { toast } from "sonner";
+import axios from "axios";
 
 const UserBookmarks = () => {
-    const { getToken } = useAuth();
+    const [bookmarks, setBookmarks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/user/bookmarks`, token);
-        if (error || !data.success) {
-            throw new Error(error);
-        }
-        return data;
-    };
+    useEffect(() => {
+        const fetchBookmarks = async () => {
+            try {
+                const { data } = await axios.get(`/api/user/bookmarks`);
+                if (data.success) {
+                    setBookmarks(data.bookmarks);
+                }
+            } catch (error) {
+                console.log(error);
+                toast.error("Error fetching bookmarks");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBookmarks();
+    }, []);
 
-    const { data, error, isLoading } = useSWR("/user/bookmarks", fetcher);
+    if (loading) return <GlobalSpinner />;
 
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-xl mt-10">❌ Error fetching posts</h1>;
-    if (!data?.bookmarks?.length) return <h1 className="text-xl mt-10">There are no bookmarks yet..😔</h1>;
+    if (!bookmarks?.length)
+        return (
+            <div className="mt-10 flex items-center justify-center w-full">
+                <h1 className="text-xl text-center">There are no bookmarks yet.. 😔</h1>
+            </div>
+        );
 
     return (
         <div className="mt-10 flex items-center justify-center w-full">
             <div className="flex flex-col gap-6 w-full">
-                {data.bookmarks.map((bookmark) => {
-                    return <Post key={bookmark._id} {...bookmark} />;
-                })}
+                {bookmarks &&
+                    bookmarks.map((bookmark) => {
+                        return <Post key={bookmark._id} {...bookmark} />;
+                    })}
             </div>
         </div>
     );

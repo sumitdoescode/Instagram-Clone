@@ -1,34 +1,41 @@
-import React from "react";
-import { useAuth } from "@clerk/nextjs";
-import useSWR from "swr";
-import { fetchWithToken } from "@/utils/fetcher";
+import React, { useState, useEffect } from "react";
 import UserFollowUnfollowCard from "../../components/UserFollowUnfollowCard";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import { toast } from "sonner";
+import axios from "axios";
 
 const UserFollowing = ({ _id }) => {
-    const { getToken } = useAuth();
+    const [following, setFollowing] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const fetcher = async () => {
-        const token = await getToken();
-        const { data, error } = await fetchWithToken(`/user/${_id}/following`, token);
-        if (error || !data.success) {
-            throw new Error(error);
-        }
-        return data;
-    };
+    useEffect(() => {
+        const fetchFollowings = async () => {
+            try {
+                const { data } = await axios.get(`/api/user/${_id}/following`);
+                if (data.success) {
+                    setFollowing(data.following);
+                }
+            } catch (error) {
+                console.log(error);
+                toast.error("Error fetching followings");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFollowings();
+    }, []);
 
-    const { data, error, isLoading } = useSWR(`/user/${_id}/following`, fetcher);
+    if (loading) return <GlobalSpinner />;
 
-    if (isLoading) return <GlobalSpinner />;
-    if (error) return <h1 className="text-lg mt-10">❌ Error fetching followings</h1>;
-    if (!data?.following?.length) return <h1 className="text-lg mt-10">There are no following yet..😔</h1>;
+    if (!following?.length) return <h1 className="text-lg mt-10">There are no following yet..😔</h1>;
 
     return (
         <div className="w-full flex items-center justify-center mt-10">
             <div className="flex flex-col items-center gap-6 w-full">
-                {data.following.map((followingEl) => {
-                    return <UserFollowUnfollowCard key={followingEl._id} {...followingEl} />;
-                })}
+                {following &&
+                    following.map((followingEl) => {
+                        return <UserFollowUnfollowCard key={followingEl._id} {...followingEl} />;
+                    })}
             </div>
         </div>
     );

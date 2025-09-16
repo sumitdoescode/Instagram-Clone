@@ -2,23 +2,15 @@
 
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import useSWRMutation from "swr/mutation";
-import { patchWithToken } from "@/utils/fetcher";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
-
-const updatePost = async (url, { arg }) => {
-    const { token, formData } = arg;
-    return await patchWithToken(url, formData, token);
-};
+import axios from "axios";
 
 const UpdatePost = ({ _id, caption }) => {
-    const { trigger, isMutating } = useSWRMutation(`/post/${_id}`, updatePost);
-    const { getToken } = useAuth();
+    const [updating, setUpdating] = useState(false);
     const router = useRouter();
 
     const [open, setOpen] = useState(false);
@@ -38,27 +30,24 @@ const UpdatePost = ({ _id, caption }) => {
         setPreviewURL(file ? URL.createObjectURL(file) : null);
     };
 
-    const handleUpdatePost = async () => {
-        const token = await getToken();
-        if (!token) {
-            toast("Authentication error. Please log in again.");
-            return;
-        }
-
-        const formData = new FormData();
-        if (image) {
-            formData.append("image", image);
-        }
-        formData.append("caption", captionInput);
-
-        const { data, error } = await trigger({ token, formData });
-
-        if (error || !data?.success) {
+    const updatePost = async () => {
+        try {
+            const formData = new FormData();
+            if (image) {
+                formData.append("image", image);
+            }
+            formData.append("caption", captionInput);
+            const { data } = await axios.patch(`/api/post/${_id}`, formData);
+            if (data.success) {
+                toast("Post updated successfully");
+                setOpen(false);
+                router.push(`/post/${_id}`);
+            }
+        } catch (error) {
+            console.log(error);
             toast("Error while updating post");
-        } else {
-            toast("Post updated successfully");
-            setOpen(false);
-            router.push(`/post/${_id}`);
+        } finally {
+            setUpdating(false);
         }
     };
 
@@ -92,8 +81,8 @@ const UpdatePost = ({ _id, caption }) => {
                 </DrawerHeader>
 
                 <DrawerFooter>
-                    <Button onClick={handleUpdatePost} disabled={isMutating}>
-                        {isMutating ? "Updating..." : "Update"}
+                    <Button onClick={updatePost} disabled={updating}>
+                        {updating ? "Updating..." : "Update"}
                     </Button>
                     <DrawerClose asChild>
                         <Button className="w-full" onClick={resetState}>

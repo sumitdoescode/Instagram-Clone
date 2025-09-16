@@ -1,28 +1,30 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
-import { deleteWithToken } from "@/utils/fetcher";
-import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-const DeleteConversation = ({ conversationId }) => {
-    // here we need conversationId to delete the conversation
-    const { getToken } = useAuth();
+const DeleteChat = ({ conversationId }) => {
+    const [deleting, setDeleting] = useState(false);
+    const router = useRouter();
+
     const deleteConversation = async () => {
-        const token = await getToken();
-        return await deleteWithToken(`/conversation/${conversationId}`, token);
-    };
-
-    const { trigger, isMutating } = useSWRMutation(`/conversation/${conversationId}`, deleteConversation);
-
-    const handleDeleteConversation = async () => {
-        const { data, error } = await trigger();
-        if (error || !data.success) {
-            return toast("Error deleting conversation");
+        try {
+            setDeleting(true);
+            const { data } = await axios.delete(`/api/conversation/${conversationId}`);
+            if (data.success) {
+                toast("Conversation deleted successfully");
+            }
+            router.push("/chat");
+        } catch (error) {
+            console.log(error);
+            toast("Error deleting conversation");
+        } finally {
+            setDeleting(false);
         }
-        console.log(data);
     };
     return (
         <AlertDialog>
@@ -38,8 +40,8 @@ const DeleteConversation = ({ conversationId }) => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteConversation} disabled={isMutating}>
-                        Continue
+                    <AlertDialogAction onClick={deleteConversation} disabled={deleting}>
+                        {deleting ? "Deleting..." : "Continue"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -47,4 +49,4 @@ const DeleteConversation = ({ conversationId }) => {
     );
 };
 
-export default DeleteConversation;
+export default DeleteChat;

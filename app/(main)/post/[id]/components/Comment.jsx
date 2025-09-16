@@ -6,37 +6,34 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Trash2 } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
-import { deleteWithToken } from "@/utils/fetcher";
 import { toast } from "sonner";
-import useSWRMutation from "swr/mutation";
+import axios from "axios";
 
-const Comment = ({ _id, text, createdAt, isAuthor, author, mutate, postId }) => {
+const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId }) => {
     const { _id: authorId, username, profileImage, gender } = author;
 
     const [expanded, setExpanded] = useState(false);
-    const isLong = text.length > 50;
+    const [deleting, setDeleting] = useState(false);
 
-    const { getToken } = useAuth();
     const router = useRouter();
     dayjs.extend(relativeTime);
 
-    const deleteComment = async (url, { arg: token }) => {
-        return await deleteWithToken(url, token);
-    };
+    const isLong = text.length > 50;
 
-    const { trigger, isMutating } = useSWRMutation(`/comment/${_id}`, deleteComment);
-
-    const handleDeleteComment = async () => {
-        const token = await getToken();
-
-        const { data, error } = await trigger(token);
-        if (error || !data.success) {
-            toast(error);
-            return;
+    const deleteComment = async () => {
+        try {
+            setDeleting(true);
+            const { data } = await axios.delete(`/api/comment/${_id}`);
+            if (data.success) {
+                toast("Comment deleted successfully");
+                fetchComments();
+            }
+        } catch {
+            console.log(error);
+            toast("Error while deleting comment");
+        } finally {
+            setDeleting(false);
         }
-        toast("Comment deleted successfully");
-        mutate();
     };
     return (
         <Card className="w-full p-2 gap-3">
@@ -67,8 +64,8 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, mutate, postId }) => 
                         )}
                     </p>
                     {isAuthor && (
-                        <button disabled={isMutating}>
-                            <Trash2 size={18} className="cursor-pointer text-red-500 min-w-fit" onClick={handleDeleteComment} />
+                        <button disabled={deleting}>
+                            <Trash2 size={18} className="cursor-pointer text-red-500 min-w-fit" onClick={deleteComment} />
                         </button>
                     )}
                 </div>

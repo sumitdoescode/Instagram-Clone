@@ -1,31 +1,29 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import useSWRMutation from "swr/mutation";
-import { deleteWithToken } from "@/utils/fetcher";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner"; // Ensure toast is imported correctly
-
-const deletePost = async (url, { arg: token }) => {
-    return await deleteWithToken(url, token);
-};
+import { toast } from "sonner";
+import axios from "axios";
 
 const DeletePost = ({ _id }) => {
-    const { trigger, isMutating } = useSWRMutation(`/post/${_id}`, deletePost);
-    const { getToken } = useAuth();
+    const [deleting, setDeleting] = useState(false);
     const router = useRouter();
 
     const handleDeletePost = async () => {
-        const token = await getToken();
-        const { data, error } = await trigger(token);
-        if (error || !data.success) {
-            toast(error);
-            return;
+        try {
+            setDeleting(true);
+            const { data } = await axios.delete(`/api/post/${_id}`);
+            if (data.success) {
+                toast("Post deleted successfully");
+                router.push("/");
+            }
+        } catch (error) {
+            console.log(error);
+            toast("Error while deleting post");
+        } finally {
+            setDeleting(false);
         }
-        toast("Post deleted successfully");
-        router.push("/"); // Redirect to home page
     };
 
     return (
@@ -40,8 +38,8 @@ const DeletePost = ({ _id }) => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeletePost} disabled={isMutating}>
-                        {isMutating ? "Deleting..." : "Delete"}
+                    <AlertDialogAction onClick={handleDeletePost} disabled={deleting}>
+                        {deleting ? "Deleting..." : "Delete"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

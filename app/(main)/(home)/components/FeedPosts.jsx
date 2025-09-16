@@ -1,46 +1,39 @@
 "use client";
 
-import React from "react";
-import { useAuth } from "@clerk/nextjs";
-import useSWR from "swr";
+import React, { useState, useEffect } from "react";
 import PostCard from "../../components/PostCard";
-import { fetchWithToken } from "@/utils/fetcher";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import axios from "axios";
+import { toast } from "sonner";
 
 const FeedPosts = () => {
-    const { getToken } = useAuth();
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const fetcher = async () => {
-        const token = await getToken({ template: "default" });
-        console.log(token);
-        const { data, error } = await fetchWithToken("/post", token);
-        if (error) throw new Error("Failed to fetch posts");
-        return data;
-    };
+    useEffect(() => {
+        const getPosts = async () => {
+            try {
+                const { data } = await axios.get("/api/post");
+                if (data.success) {
+                    setPosts(data.posts);
+                }
+            } catch (error) {
+                console.log(error);
+                toast("Error fetching posts");
+            } finally {
+                setLoading(false);
+            }
+        };
+        getPosts();
+    }, []);
 
-    const { data, error, isLoading } = useSWR("/post", fetcher);
+    if (loading) return <GlobalSpinner />;
 
-    if (isLoading) return <GlobalSpinner />;
-
-    if (error) {
-        return (
-            <div className="flex justify-center items-center h-[200px]">
-                <div className="bg-red-100 text-red-700 px-6 py-3 rounded-lg shadow">❌ Something went wrong while loading posts.</div>
-            </div>
-        );
-    }
-
-    if (!data?.posts?.length) {
+    if (!posts.length) {
         return <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mt-10">There are no posts yet. 😔</h2>;
     }
 
-    return (
-        <div className="flex flex-col gap-4 w-full">
-            {data.posts.map((post) => (
-                <PostCard key={post._id} {...post} />
-            ))}
-        </div>
-    );
+    return <div className="flex flex-col gap-4 w-full">{posts && posts.map((post) => <PostCard key={post._id} {...post} />)}</div>;
 };
 
 export default FeedPosts;
