@@ -4,7 +4,6 @@ import { isValidObjectId } from "mongoose";
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { clerkClient } from "@clerk/nextjs/server";
 import Post from "@/models/Post";
 
 // get all posts / feed posts
