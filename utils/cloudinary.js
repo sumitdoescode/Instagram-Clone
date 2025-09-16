@@ -30,7 +30,7 @@ export const uploadOnCloudinary = async (file) => {
 };
 
 // publicId is required to delete the file that's why we are storing it
-const deleteFromCloudinary = async (publicId, resource_type = "image") => {
+export const deleteFromCloudinary = async (publicId, resource_type = "image") => {
     try {
         if (!publicId) {
             console.log("publicId is required");
@@ -46,5 +46,3 @@ const deleteFromCloudinary = async (publicId, resource_type = "image") => {
         return null;
     }
 };
-
-export { uploadOnCloudinary, deleteFromCloudinary };
