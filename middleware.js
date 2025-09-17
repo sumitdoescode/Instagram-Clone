@@ -1,7 +1,7 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware(async (auth, req) => {
-    const publicRoutes = ["/sign-in(.*)", "/sign-up(.*)"]; // regex style match
+    const publicRoutes = ["/sign-in(.*)", "/sign-up(.*)", "/api(.*)"]; // regex style match
 
     if (!publicRoutes.some((route) => new RegExp(`^${route}$`).test(req.nextUrl.pathname))) {
         await auth.protect();
