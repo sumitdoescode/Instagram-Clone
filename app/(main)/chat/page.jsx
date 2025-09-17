@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import axios from "axios";
 import { pusherClient } from "@/lib/pusher-client";
-import DeleteChat from "./components/DeleteChat";
 
 // page to show all conversations
 const ChatsPage = () => {

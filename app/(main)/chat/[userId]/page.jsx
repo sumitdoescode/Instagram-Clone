@@ -3,7 +3,6 @@
 import React from "react";
 import Section from "@/components/Section";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { notFound, useRouter } from "next/navigation";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import { useParams } from "next/navigation";
 import dayjs from "dayjs";

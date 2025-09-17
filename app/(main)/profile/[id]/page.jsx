@@ -12,9 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import UserPosts from "../components/UserPosts";
 import UserFollowers from "../components/UserFollowers";
 import UserFollowing from "../components/UserFollowing";
-import { useRouter } from "next/navigation";
 import GlobalSpinner from "@/components/GlobalSpinner";
-import Link from "next/link";
 import axios from "axios";
 
 // page to show user profile by id

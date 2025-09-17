@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,8 +9,6 @@ import CreatePost from "./CreatePost";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AlignJustify } from "lucide-react";
 import GlobalSpinner from "@/components/GlobalSpinner";
-import axios from "axios";
-import { toast } from "sonner";
 import { useUserContext } from "@/contexts/UserContextProvider";
 
 const LeftSidebar = () => {

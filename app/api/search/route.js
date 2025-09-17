@@ -1,10 +1,7 @@
 import User from "@/models/User";
-import { uploadOnCloudinary } from "@/utils/cloudinary";
-import { isValidObjectId } from "mongoose";
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { clerkClient } from "@clerk/nextjs/server";
 
 export async function GET(req) {
     try {

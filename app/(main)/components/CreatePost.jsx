@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { BadgePlus } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import GlobalSpinner from "@/components/GlobalSpinner";
 import axios from "axios";
 
 const CreatePost = () => {

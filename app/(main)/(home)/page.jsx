@@ -1,5 +1,4 @@
 import Section from "@/components/Section";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import Feed from "./components/Feed";
 import Recommendations from "./components/Recommendations";
 
