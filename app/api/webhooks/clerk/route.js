@@ -37,8 +37,9 @@ export async function POST(req) {
     const { id: clerkId, username, email_addresses, image_url, public_metadata } = data;
 
     const email = email_addresses?.[0]?.email_address;
-
+    console.log("coming here");
     if (type === "user.created") {
+        console.log("coming isnde user.created");
         await User.create({
             clerkId,
             username: username,
