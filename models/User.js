@@ -82,7 +82,7 @@ userSchema.pre("findOneAndDelete", async function (next) {
         // 5. Delete the conversation where the user is participant
         console.log("coming before conversation deltee");
         await Conversation.deleteMany({
-            participants: mongoose.Types.ObjectId(user._id),
+            participants: new mongoose.Types.ObjectId(user._id),
         });
 
         next();
