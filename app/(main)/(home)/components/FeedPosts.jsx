@@ -6,6 +6,7 @@ import GlobalSpinner from "@/components/GlobalSpinner";
 import axios from "axios";
 import { toast } from "sonner";
 import Section from "@/components/Section";
+import { Button } from "@/components/ui/button";
 
 const FeedPosts = () => {
     const [posts, setPosts] = useState([]);
