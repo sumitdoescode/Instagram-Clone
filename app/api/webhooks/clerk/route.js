@@ -61,7 +61,9 @@ export async function POST(req) {
     //     );
     // }
 
+    console.log("coming here too");
     if (type === "user.deleted") {
+        console.log("coming here");
         await User.findOneAndDelete({ clerkId });
     }
 
