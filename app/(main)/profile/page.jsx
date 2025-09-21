@@ -32,7 +32,7 @@ export default function OwnProfilePage() {
                         </Avatar>
                         <div className="text-center mt-4">
                             <div className="text-center mt-4">
-                                {<Badge className="text-xs rounded-lg ml-auto">Author</Badge>}
+                                {<Badge className="text-xs rounded-lg ml-auto">Owner</Badge>}
                                 <h4 className="scroll-m-20 text-xl font-medium mt-2">{username}</h4>
                                 {gender && <p className="text-muted-foreground text-sm">{gender === "male" ? "he/him" : "she/her"}</p>}
                             </div>

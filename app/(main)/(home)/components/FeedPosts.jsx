@@ -30,7 +30,18 @@ const FeedPosts = () => {
     if (loading) return <GlobalSpinner />;
 
     if (!posts.length) {
-        return <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mt-10">There are no posts yet. 😔</h2>;
+        return (
+            <Section>
+                <div className="mt-30 text-center">
+                    {/* <Image src="/not-found.png" alt="Post not found" width={300} height={300} /> */}
+                    <h1 className="text-5xl text-white font-bold tracking-tight">No Posts Yet</h1>
+                    <p className="text-gray-400 text-base mt-1">Create your first post to start and share your journey with the world.</p>
+                    <Button onClick={() => router.push("/")} className={"mt-7"} size={"lg"}>
+                        Create Post
+                    </Button>
+                </div>
+            </Section>
+        );
     }
 
     return <div className="flex flex-col gap-4 w-full">{posts && posts.map((post) => <PostCard key={post._id} {...post} />)}</div>;

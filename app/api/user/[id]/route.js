@@ -26,7 +26,7 @@ export async function GET(req, { params }) {
                     followersCount: { $size: "$followers" },
                     followingCount: { $size: "$following" },
                     postsCount: { $size: "$posts" },
-                    isAuthor: { $eq: ["$_id", loggedInUser._id] },
+                    isOwner: { $eq: ["$_id", loggedInUser._id] },
                     isFollowing: { $in: [loggedInUser._id, "$followers"] }, // no lookup needed, array of IDs hai
                 },
             },
@@ -40,7 +40,7 @@ export async function GET(req, { params }) {
                     followersCount: 1,
                     followingCount: 1,
                     postsCount: 1,
-                    isAuthor: 1,
+                    isOwner: 1,
                     isFollowing: 1,
                 },
             },

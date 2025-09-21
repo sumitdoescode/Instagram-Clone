@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import axios from "axios";
 import GlobalSpinner from "@/components/GlobalSpinner";
+import { CirclePlus } from "lucide-react";
 
 const Comments = ({ postId }) => {
     const [comments, setComments] = useState([]);
@@ -65,7 +66,10 @@ const Comments = ({ postId }) => {
                     <h1 className="text-lg">Comments ({comments?.length || 0})</h1>
                     <AlertDialog>
                         <AlertDialogTrigger>
-                            <Button>Add Comment</Button>
+                            <div className="flex items-center justify-center gap-2 border cursor-pointer bg-primary text-primary-foreground hover:bg-primary/80 p-2 rounded-lg">
+                                <CirclePlus size={20} />
+                                <span className="text-sm">Add</span>
+                            </div>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>

@@ -44,9 +44,9 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId
                             <AvatarImage src={profileImage.url} />
                             <AvatarFallback>{username.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col gap-0">
                             <CardTitle className="font-regular text-sm">{username}</CardTitle>
-                            {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
+                            {gender && <CardDescription className="text-sm -mt-1">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
                         </div>
                     </div>
                     <p className="text-sm text-gray-400">{dayjs(createdAt).fromNow()}</p>

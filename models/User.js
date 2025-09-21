@@ -2,6 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 import Post from "./Post";
 import Comment from "./Comment";
 import Message from "./Message";
+import Conversation from "./Conversation";
 import { deleteFromCloudinary } from "@/utils/cloudinary";
 
 const userSchema = new Schema(
@@ -53,10 +54,12 @@ const userSchema = new Schema(
 );
 
 userSchema.pre("findOneAndDelete", async function (next) {
+    console.log("coming here first");
     const user = await this.model.findOne(this.getQuery());
     if (!user) return next();
 
     try {
+        console.log("user is getting deleted");
         // 1. Delete profile image from Cloudinary
         if (user.profileImage?.public_id) {
             await deleteFromCloudinary(user.profileImage.public_id);
@@ -74,6 +77,12 @@ userSchema.pre("findOneAndDelete", async function (next) {
         // 4. Delete all messages where the user is sender or receiver
         await Message.deleteMany({
             $or: [{ senderId: user._id }, { receiverId: user._id }],
+        });
+
+        // 5. Delete the conversation where the user is participant
+        console.log("coming before conversation deltee");
+        await Conversation.deleteMany({
+            participants: mongoose.Types.ObjectId(user._id),
         });
 
         next();

@@ -20,7 +20,7 @@ export async function GET(req, { params }) {
             return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         if (!isValidObjectId(id)) {
             return NextResponse.json({ success: false, message: "Invalid user ID" }, { status: 400 });
         }

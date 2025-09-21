@@ -44,12 +44,16 @@ const Page = () => {
 
     if (notFound) {
         return (
-            <div className="mt-10 flex flex-col items-center gap-6 text-center">
-                {/* <Image src="/not-found.png" alt="Post not found" width={300} height={300} /> */}
-                <h1 className="text-3xl text-white font-bold">Post Not Found</h1>
-                <p className="text-gray-400">The post you're looking for doesn't exist or was removed.</p>
-                <Button onClick={() => router.push("/")}>Go to Home</Button>
-            </div>
+            <Section className={"w-full "}>
+                <div className="mt-30 text-center">
+                    {/* <Image src="/not-found.png" alt="Post not found" width={300} height={300} /> */}
+                    <h1 className="text-5xl text-white font-bold tracking-tight">Post Not Found</h1>
+                    <p className="text-gray-400 text-base mt-1">The post you're looking for doesn't exist or was removed.</p>
+                    <Button onClick={() => router.push("/")} className={"mt-7"} size={"lg"}>
+                        Go to Home
+                    </Button>
+                </div>
+            </Section>
         );
     }
 

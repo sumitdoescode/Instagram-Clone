@@ -14,14 +14,16 @@ import UserFollowers from "../components/UserFollowers";
 import UserFollowing from "../components/UserFollowing";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import axios from "axios";
+import Link from "next/link";
 
 // page to show user profile by id
-export default function ProfilePage() {
+const ProfilePage = () => {
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
     const [toggling, setToggling] = useState(false);
     const [following, setFollowing] = useState(false);
     const { id } = useParams(); // this is the user id
+    const [notFound, setNotFound] = useState(false);
 
     // const router = useRouter();
 
@@ -34,8 +36,11 @@ export default function ProfilePage() {
                     setFollowing(data.user.isFollowing);
                 }
             } catch (error) {
+                if (error.response.status === 404) {
+                    setNotFound(true);
+                    return;
+                }
                 console.log(error);
-                toast.error("Error fetching user");
             } finally {
                 setLoading(false);
             }
@@ -45,7 +50,22 @@ export default function ProfilePage() {
 
     if (loading) return <GlobalSpinner />;
 
-    const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isAuthor } = user;
+    if (notFound) {
+        return (
+            <Section className={"w-full "}>
+                <div className="mt-30 text-center">
+                    {/* <Image src="/not-found.png" alt="Post not found" width={300} height={300} /> */}
+                    <h1 className="text-5xl text-white font-bold tracking-tight">User Not Found</h1>
+                    <p className="text-gray-400 text-base mt-1">The User you're looking for doesn't exist or was deleted.</p>
+                    <Button onClick={() => router.push("/")} className={"mt-7"} size={"lg"}>
+                        Go to Home
+                    </Button>
+                </div>
+            </Section>
+        );
+    }
+
+    const { username, profileImage, gender, bio, email, postsCount, followersCount, followingCount, isOwner } = user;
 
     const toggleFollow = async () => {
         try {
@@ -73,26 +93,28 @@ export default function ProfilePage() {
                         </Avatar>
 
                         <div className="text-center mt-4">
-                            {isAuthor && <Badge className="text-xs rounded-lg ml-auto">Author</Badge>}
+                            {isOwner && <Badge className="text-xs rounded-lg ml-auto">Owner</Badge>}
                             <h4 className="scroll-m-20 text-xl font-medium mt-2">{username}</h4>
                             {gender && <p className="text-muted-foreground text-sm">{gender === "male" ? "he/him" : "she/her"}</p>}
                         </div>
                         <CardDescription>
                             <p className="[&:not(:first-child)]:mt-2 text-white">{email}</p>
                             <blockquote className="mt-6 border-l-2 pl-6 italic max-w-md">{bio}</blockquote>
-                            <div className="flex items-center justify-center gap-2 mt-6">
-                                {!isAuthor && (
+
+                            {/* if your are not the owner, you can toggle follow/unfollow and chat */}
+                            {!isOwner && (
+                                <div className="flex items-center justify-center gap-2 mt-6">
                                     <Button className="cursor-pointer" onClick={toggleFollow} disabled={toggling}>
                                         {toggling ? "Loading..." : following ? "Unfollow" : "Follow"}
                                     </Button>
-                                )}
-                                {/* as you can't send message to yourself, so commented it out */}
-                                {/* <Link href={`/chat/${id}`} className="disabled">
-                                    <Button variant="outline" className="cursor-pointer disabled:cursor-not-allowed">
-                                        Chat
-                                    </Button>
-                                </Link> */}
-                            </div>
+
+                                    <Link href={`/chat/${id}`}>
+                                        <Button variant="outline" className="cursor-pointer disabled:cursor-not-allowed">
+                                            Chat
+                                        </Button>
+                                    </Link>
+                                </div>
+                            )}
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -137,4 +159,6 @@ export default function ProfilePage() {
             </Card>
         </Section>
     );
-}
+};
+
+export default ProfilePage;

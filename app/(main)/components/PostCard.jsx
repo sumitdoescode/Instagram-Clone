@@ -78,8 +78,8 @@ const PostCard = ({ _id, caption, image, author, isLiked, likesCount, commentCou
                             <AvatarFallback>{username?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                            <CardTitle className="font-medium">{username}</CardTitle>
-                            {gender && <CardDescription className="text-sm">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
+                            <CardTitle className="text-base font-normal">{username}</CardTitle>
+                            {gender && <CardDescription className="text-sm -mt-1">{gender === "male" ? "he/him" : "she/her"}</CardDescription>}
                         </div>
                     </div>
 

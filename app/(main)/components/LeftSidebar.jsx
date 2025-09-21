@@ -44,21 +44,26 @@ const LeftSidebar = () => {
                 </SheetHeader>
 
                 {/* Sidebar Items */}
+                {/* Sidebar Items */}
                 <div className="px-2">
                     <div className="flex flex-col gap-4">
-                        {items.map(({ title, url, Icon }) => (
-                            <div key={title} className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md">
-                                <Link href={url} className="flex items-center gap-2">
-                                    <Icon size={22} />
-                                    <span className="text-xl">{title}</span>
-                                </Link>
-                            </div>
-                        ))}
+                        {items.map(({ title, url, Icon }, index) => (
+                            <React.Fragment key={title}>
+                                <div className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md">
+                                    <Link href={url} className="flex items-center gap-2">
+                                        <Icon size={22} />
+                                        <span className="text-xl">{title}</span>
+                                    </Link>
+                                </div>
 
-                        {/* Create Post */}
-                        <div className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md cursor-pointer">
-                            <CreatePost />
-                        </div>
+                                {/* Insert CreatePost after Home (index 0) */}
+                                {index === 0 && (
+                                    <div className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md cursor-pointer">
+                                        <CreatePost />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
 
                         {/* Logout */}
                         <div className="px-2 py-1 hover:bg-stone-800 duration-200 ease-in-out rounded-md cursor-pointer">

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import { SquarePen } from "lucide-react";
 import axios from "axios";
 
 const UpdatePost = ({ _id, caption }) => {
@@ -60,7 +61,10 @@ const UpdatePost = ({ _id, caption }) => {
             }}
         >
             <DrawerTrigger asChild>
-                <Button>Update Post</Button>
+                <Button>
+                    <SquarePen size={20} />
+                    <span className="text-sm">Update</span>
+                </Button>
             </DrawerTrigger>
 
             <DrawerContent>

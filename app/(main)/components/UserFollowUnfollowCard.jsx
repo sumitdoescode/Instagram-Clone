@@ -35,8 +35,8 @@ const UserFollowUnfollowCard = ({ _id, username, profileImage, gender, followers
                     <AvatarFallback className="rounded-lg">{username.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                    <p className="text-sm font-semibold">{username}</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-base font-normal">{username}</p>
+                    <p className="text-sm text-gray-400 -mt-1">
                         {followersCount} {followersCount === 1 ? "follower" : "followers"}
                     </p>
                 </div>

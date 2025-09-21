@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
+import { Trash } from "lucide-react";
 
 const DeletePost = ({ _id }) => {
     const [deleting, setDeleting] = useState(false);
@@ -29,7 +30,10 @@ const DeletePost = ({ _id }) => {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive">Delete Post</Button>
+                <Button variant="destructive">
+                    <Trash size={24} />
+                    <span className="text-sm">Delete</span>
+                </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

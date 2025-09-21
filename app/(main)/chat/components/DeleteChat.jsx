@@ -29,9 +29,9 @@ const DeleteChat = ({ conversationId }) => {
     return (
         <AlertDialog>
             <AlertDialogTrigger>
-                <Button className={"cursor-pointer"}>
-                    <Trash2 />
-                </Button>
+                {/* <Button className={"cursor-pointer"}> */}
+                <Trash2 />
+                {/* </Button> */}
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

@@ -97,6 +97,8 @@ export async function DELETE(req, { params }) {
 
         // Delete all messages in the conversation
         await Message.deleteMany({ conversationId: conversation._id });
+
+        // Delete the conversation
         await Conversation.findByIdAndDelete(conversation._id);
 
         return NextResponse.json({ success: true, message: "Conversation deleted successfully" }, { status: 200 });
