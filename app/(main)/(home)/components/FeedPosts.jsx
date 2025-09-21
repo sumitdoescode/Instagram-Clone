@@ -5,6 +5,7 @@ import PostCard from "../../components/PostCard";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import axios from "axios";
 import { toast } from "sonner";
+import Section from "@/components/Section";
 
 const FeedPosts = () => {
     const [posts, setPosts] = useState([]);
