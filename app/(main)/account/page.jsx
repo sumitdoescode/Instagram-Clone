@@ -12,6 +12,7 @@ import Section from "@/components/Section";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import axios from "axios";
 import { useUserContext } from "@/contexts/UserContextProvider";
+import { Trash } from "lucide-react";
 
 const AccountPage = () => {
     const { user, loading } = useUserContext();
@@ -67,8 +68,9 @@ const AccountPage = () => {
                 <CardFooter className={"p-0"}>
                     <AlertDialog>
                         <AlertDialogTrigger className="mx-auto">
-                            <Button className="cursor-pointer" variant="destructive">
-                                Delete Account
+                            <Button variant="destructive">
+                                <Trash size={24} />
+                                <span className="text-base">Delete Account</span>
                             </Button>
                         </AlertDialogTrigger>
 
@@ -81,7 +83,7 @@ const AccountPage = () => {
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction onClick={deleteAccount} className="cursor-pointer" disabled={deleting}>
-                                    {deleting ? "Deleting..." : "Continue"}
+                                    {deleting ? "Deleting..." : "Delete"}
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
