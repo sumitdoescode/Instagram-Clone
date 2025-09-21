@@ -132,7 +132,7 @@ export async function DELETE(req) {
         // delete the user from clerk then user will be deleted from DB automatically
 
         // delete the user from database
-        await User.findOneAndDelete({ clerkId: userId });
+        // await User.findOneAndDelete({ clerkId: userId });
 
         return NextResponse.json({ success: true, message: "Clerk Profile deleted successfully" }, { status: 200 });
     } catch (error) {

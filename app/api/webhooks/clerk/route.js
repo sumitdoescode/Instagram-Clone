@@ -61,9 +61,9 @@ export async function POST(req) {
     //     );
     // }
 
-    // if (type === "user.deleted") {
-    //     await User.findOneAndDelete({ clerkId });
-    // }
+    if (type === "user.deleted") {
+        await User.findOneAndDelete({ clerkId });
+    }
 
     return new Response("Webhook received", { status: 200 });
 }
