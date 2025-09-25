@@ -85,6 +85,13 @@ userSchema.pre("findOneAndDelete", async function (next) {
             participants: new mongoose.Types.ObjectId(user._id),
         });
 
+        // 6. Remove userId from followers/following of other users
+        await User.updateMany({ followers: user._id }, { $pull: { followers: user._id } });
+        await User.updateMany({ following: user._id }, { $pull: { following: user._id } });
+
+        // 7. Remove deletedUserId from likes of posts
+        await Post.updateMany({ likes: user._id }, { $pull: { likes: user._id } });
+
         next();
     } catch (err) {
         console.error("Error in user pre-delete middleware:", err);
