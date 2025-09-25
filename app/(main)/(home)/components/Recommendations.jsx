@@ -28,7 +28,7 @@ const Recommendations = () => {
     if (loading) return <GlobalSpinner />;
     if (!recommendedUsers.length) return null;
     return (
-        <Card className="w-full max-w-lg p-3 lg:sticky lg:top-12 gap-0">
+        <Card className="w-full p-3 gap-0">
             <CardHeader className="p-0">
                 <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">You might want to know them</h4>
             </CardHeader>

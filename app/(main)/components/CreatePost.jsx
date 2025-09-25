@@ -54,7 +54,7 @@ const CreatePost = () => {
                 toast("Post created successfully!");
                 resetForm();
                 setOpen(false);
-                router.push("/");
+                router.push("/profile");
             }
         } catch (error) {
             console.log(error);

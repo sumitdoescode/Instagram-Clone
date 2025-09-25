@@ -30,7 +30,9 @@ const DeleteChat = ({ conversationId }) => {
         <AlertDialog>
             <AlertDialogTrigger>
                 {/* <Button className={"cursor-pointer"}> */}
-                <Trash2 />
+                <div className="flex items-center justify-center bg-primary text-primary-foreground rounded-lg p-2">
+                    <Trash2 size={20} />
+                </div>
                 {/* </Button> */}
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -41,7 +43,7 @@ const DeleteChat = ({ conversationId }) => {
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={deleteConversation} disabled={deleting}>
-                        {deleting ? "Deleting..." : "Continue"}
+                        {deleting ? "Deleting..." : "Delete"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
