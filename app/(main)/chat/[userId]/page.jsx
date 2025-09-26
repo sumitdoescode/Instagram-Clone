@@ -200,7 +200,7 @@ export default function ChatPage() {
                                             className={`flex flex-col ${userId === msg.senderId ? "self-start" : "self-end"} ${isNewDay ? "mt-4" : "mt-2"}`}
                                         >
                                             <div className={`px-3 py-2 rounded-lg text-sm font-medium ${userId === msg.senderId ? "bg-blue-200 text-black self-start" : "bg-green-200 text-black self-end"}`}>{msg.message || msg.content}</div>
-                                            <p className="text-xs text-neutral-500 mt-1 text-right">{msg.createdAt ? dayjs(msg.createdAt).format("HH:mm") : ""}</p>
+                                            <p className={`text-xs text-neutral-500 mt-1 ${userId === msg.senderId ? "text-left" : "text-right"}`}>{msg.createdAt ? dayjs(msg.createdAt).format("HH:mm") : ""}</p>
                                         </motion.div>
                                     </div>
                                 );
