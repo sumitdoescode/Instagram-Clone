@@ -36,7 +36,6 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId
             setDeleting(false);
         }
     };
-    console.log("rending");
     return (
         <Card className="w-full p-2 gap-3">
             <CardHeader className="p-0 mb-0 gap-0">
