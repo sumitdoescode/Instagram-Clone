@@ -34,7 +34,6 @@ export async function GET(req, { params }) {
         }
 
         if (otherUser._id.toString() === currentUser._id.toString()) {
-            console.log("yes it is same");
             return NextResponse.json({ success: false, message: "You can't message yourself" }, { status: 400 });
         }
 
@@ -146,7 +145,7 @@ export async function POST(req, { params }) {
         // notify receiver’s unread count
         await pusherServer.trigger(`user-${receiver._id}`, "new-message", { conversationId: conversation._id });
 
-        return NextResponse.json({ success: true, message: "Message sent successfully" }, { status: 200 });
+        return NextResponse.json({ success: true, message: "Message sent successfully", conversationId: conversation._id, message: messageObj }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message || "Internal server error" }, { status: 500 });
     }

@@ -86,7 +86,7 @@ export default function OwnProfilePage() {
                         {/* 👇 Add margin/padding so content starts lower */}
                         <div className="mt-4">
                             <TabsContent value="posts">
-                                <UserPosts _id={_id} />
+                                <UserPosts _id={_id} isOwner={true} />
                             </TabsContent>
                             <TabsContent value="followers">
                                 <UserFollowers _id={_id} />

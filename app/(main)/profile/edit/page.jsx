@@ -11,6 +11,7 @@ import Section from "@/components/Section";
 import { toast } from "sonner";
 import axios from "axios";
 import { useUserContext } from "@/contexts/UserContextProvider";
+import { useRouter } from "next/navigation";
 
 const EditProfilePage = () => {
     const [username, setUsername] = useState("");
@@ -20,6 +21,8 @@ const EditProfilePage = () => {
     const [previewImage, setPreviewImage] = useState("");
     const { user, loading } = useUserContext();
     const [editing, setEditing] = useState(false);
+
+    const router = useRouter();
 
     useEffect(() => {
         setUsername(user.username);
@@ -45,6 +48,7 @@ const EditProfilePage = () => {
             });
             if (data.success) {
                 toast("Profile updated successfully");
+                router.push("/profile");
                 setUsername(data.user.username);
                 setBio(data.user.bio);
                 setGender(data.user.gender);

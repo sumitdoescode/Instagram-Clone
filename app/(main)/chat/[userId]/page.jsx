@@ -19,6 +19,7 @@ import { pusherClient } from "@/lib/pusher-client";
 import { SendHorizontal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useUserContext } from "@/contexts/UserContextProvider";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -30,20 +31,20 @@ function getDateLabel(date) {
     return d.format("DD MMM YYYY");
 }
 
-const Page = () => {
+export default function ChatPage() {
     const [content, setContent] = useState("");
     const [sending, setSending] = useState(false);
-    const [user, setUser] = useState(null);
+    const [receiver, setReceiver] = useState(null);
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [conversationId, setConversationId] = useState(null);
     const [isError, setIsError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    const { user } = useUserContext();
     const { userId } = useParams();
     const bottomRef = useRef(null);
     const textareaRef = useRef(null);
-
     const router = useRouter();
 
     // Fetch messages
@@ -52,16 +53,14 @@ const Page = () => {
             try {
                 const { data } = await axios.get(`/api/message/user/${userId}`);
                 if (data.success) {
-                    setUser(data.user);
+                    setReceiver(data.user);
                     setMessages(data.messages);
-                    if (data.messages.length) {
-                        setConversationId(data.messages[0].conversationId);
-                    }
+                    if (data.messages.length) setConversationId(data.messages[0].conversationId);
                 }
-            } catch (error) {
-                console.log(error);
+            } catch (err) {
+                console.log(err);
                 setIsError(true);
-                setErrorMessage(error.response?.data?.message || "Error fetching messages");
+                setErrorMessage(err.response?.data?.message || "Error fetching messages");
                 toast.error("Error fetching user messages");
             } finally {
                 setLoading(false);
@@ -70,26 +69,53 @@ const Page = () => {
         fetchMessages();
     }, [userId]);
 
+    const sendMessage = async () => {
+        if (!content.trim()) return;
+        try {
+            setSending(true);
+            const { data } = await axios.post(`/api/message/user/${userId}`, { content: content.trim() });
+
+            if (data.success) {
+                setContent("");
+                setConversationId(data.conversationId);
+
+                // ✅ Instantly show the message in UI (important for first message)
+                setMessages((prev) => {
+                    // Prevent duplicates if Pusher sends it too
+                    if (prev.find((m) => m._id === data.message._id)) return prev;
+                    return [...prev, data.message];
+                });
+
+                if (textareaRef.current) textareaRef.current.style.height = "40px";
+            }
+        } catch (err) {
+            console.log(err);
+            toast("Error sending message");
+        } finally {
+            setSending(false);
+        }
+    };
+
     // Pusher subscription
     useEffect(() => {
-        if (!conversationId) return;
+        if (!conversationId) {
+            return;
+        }
 
         const channel = pusherClient.subscribe(`conversation-${conversationId}`);
 
         const markAsRead = async () => {
             try {
                 await axios.patch(`/api/conversation/${conversationId}`);
-            } catch (error) {
-                console.log(error);
+            } catch (err) {
+                console.log(err);
                 toast("Error marking conversation as read");
             }
         };
 
         channel.bind("new-message", (newMessage) => {
             setMessages((prev) => [...prev, newMessage]);
-            if (String(newMessage.senderId) === String(userId)) {
-                markAsRead();
-            }
+            if (String(newMessage.senderId) === String(userId)) markAsRead();
         });
 
         return () => {
@@ -98,35 +124,12 @@ const Page = () => {
         };
     }, [conversationId]);
 
-    // Scroll to bottom when messages change
+    // Scroll to bottom
     useEffect(() => {
-        if (bottomRef.current) {
-            bottomRef.current.scrollIntoView({ behavior: "smooth" });
-        }
+        if (bottomRef.current) bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Send message
-    const sendMessage = async () => {
-        try {
-            setSending(true);
-            const { data } = await axios.post(`/api/message/user/${userId}`, {
-                content: content.trim(),
-            });
-            if (data.success) {
-                setContent("");
-                if (textareaRef.current) {
-                    textareaRef.current.style.height = "40px"; // reset after send
-                }
-            }
-        } catch (error) {
-            console.log(error);
-            toast("Error sending message");
-        } finally {
-            setSending(false);
-        }
-    };
-
-    if (isError) {
+    if (isError)
         return (
             <Section>
                 <Card className="p-2 sticky top-10 z-10 shadow-2xl">
@@ -136,7 +139,6 @@ const Page = () => {
                 </Card>
             </Section>
         );
-    }
 
     if (loading) return <GlobalSpinner />;
     if (!user) return null;
@@ -149,12 +151,12 @@ const Page = () => {
                     <CardHeader className="p-0 flex items-center justify-between">
                         <Link className="flex items-center gap-3 cursor-pointer" href={`/profile/${userId}`}>
                             <Avatar className="w-10 h-10">
-                                <AvatarImage src={user?.profileImage?.url} alt={user?.username} className="object-cover" />
-                                <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={receiver?.profileImage?.url} alt={receiver?.username} className="object-cover" />
+                                <AvatarFallback>{receiver?.username?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col w-full">
-                                <CardTitle className="font-medium">{user?.username}</CardTitle>
-                                <p className="text-sm text-neutral-300">{user?.gender}</p>
+                                <CardTitle className="font-medium">{receiver?.username}</CardTitle>
+                                <p className="text-sm text-neutral-300">{receiver?.gender}</p>
                             </div>
                         </Link>
                         {conversationId && <DeleteChat conversationId={conversationId} />}
@@ -164,19 +166,19 @@ const Page = () => {
                 {/* Messages */}
                 <CardContent className="flex-1 overflow-y-auto px-2 py-4 no-scrollbar">
                     <div className="flex flex-col justify-end min-h-full">
-                        {/* User profile block (centered big avatar + username) */}
+                        {/* User profile block */}
                         <div className="flex flex-col items-center justify-center gap-2 py-6">
                             <Avatar className="w-36 h-36">
-                                <AvatarImage src={user?.profileImage?.url} alt={user?.username} className="object-cover" />
-                                <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={receiver?.profileImage?.url} alt={receiver?.username} className="object-cover" />
+                                <AvatarFallback>{receiver?.username?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <p className="text-xl font-medium">{user?.username}</p>
-                            <Button variant={"outline"} onClick={() => router.push(`/profile/${userId}`)}>
+                            <p className="text-xl font-medium">{receiver?.username}</p>
+                            <Button variant="outline" onClick={() => router.push(`/profile/${userId}`)}>
                                 View Profile
                             </Button>
                         </div>
 
-                        {/* Messages */}
+                        {/* Messages list */}
                         <AnimatePresence mode="popLayout">
                             {messages.map((msg, index) => {
                                 const prev = messages[index - 1];
@@ -184,14 +186,11 @@ const Page = () => {
 
                                 return (
                                     <div key={msg._id} className="flex flex-col">
-                                        {/* Date Separator */}
                                         {isNewDay && (
                                             <div className="flex justify-center my-6">
                                                 <span className="bg-neutral-200 text-neutral-700 text-xs font-medium px-3 py-1 rounded-full">{getDateLabel(msg.createdAt)}</span>
                                             </div>
                                         )}
-
-                                        {/* Message Bubble */}
                                         <motion.div
                                             layout
                                             initial={{ opacity: 0, y: 10 }}
@@ -207,7 +206,6 @@ const Page = () => {
                                 );
                             })}
                         </AnimatePresence>
-
                         <div ref={bottomRef} />
                     </div>
                 </CardContent>
@@ -223,9 +221,8 @@ const Page = () => {
                             value={content}
                             onChange={(e) => {
                                 setContent(e.target.value);
-                                const el = e.target;
-                                el.style.height = "auto";
-                                el.style.height = `${el.scrollHeight}px`;
+                                e.target.style.height = "auto";
+                                e.target.style.height = `${e.target.scrollHeight}px`;
                             }}
                         />
                         <Button className="h-[40px] w-[40px] flex items-center justify-center rounded-md" onClick={sendMessage} disabled={!content.trim() || sending}>
@@ -236,6 +233,4 @@ const Page = () => {
             </div>
         </Section>
     );
-};
-
-export default Page;
+}

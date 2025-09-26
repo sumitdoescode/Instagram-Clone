@@ -3,8 +3,9 @@ import UserPost from "./UserPost";
 import GlobalSpinner from "@/components/GlobalSpinner";
 import { toast } from "sonner";
 import axios from "axios";
+import CreatePostHome from "../../(home)/components/CreatePostHome";
 
-const UserPosts = ({ _id }) => {
+const UserPosts = ({ _id, isOwner }) => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -26,6 +27,10 @@ const UserPosts = ({ _id }) => {
     }, []);
 
     if (loading) return <GlobalSpinner />;
+
+    if (!posts?.length && isOwner) {
+        return <CreatePostHome />;
+    }
 
     if (!posts?.length) return <h1 className="text-lg mt-10">There are no posts yet..😔</h1>;
 

@@ -80,13 +80,13 @@ const LeftSidebar = () => {
                 {/* Footer: User Info */}
                 <SheetFooter>
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                        <Avatar className="h-8 w-8 rounded-lg">
+                        <Avatar className="h-10 w-10 rounded-lg">
                             <AvatarImage src={user?.profileImage?.url} alt={user?.username} className={"object-cover"} />
                             <AvatarFallback>{user?.username?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
-                            <span className="truncate font-semibold">{user?.username}</span>
-                            <span className="truncate text-xs">{user?.email}</span>
+                            <span className="truncate font-medium text-base tracking-tight">{user?.username}</span>
+                            <span className="truncate text-sm -mt-1">{user?.email}</span>
                         </div>
                     </div>
                 </SheetFooter>
