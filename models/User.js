@@ -69,8 +69,11 @@ userSchema.pre("findOneAndDelete", async function (next) {
             await post.deleteOne();
         }
 
-        // 3. Delete comments made by the user
-        await Comment.deleteMany({ author: user._id });
+        // 3. Delete user comments and remove from posts
+        const comments = await Comment.find({ author: user._id });
+        for (const c of comments) {
+            await c.deleteOne(); // ✅ triggers commentSchema middleware
+        }
 
         // 4. Delete all messages where the user is sender or receiver
         await Message.deleteMany({

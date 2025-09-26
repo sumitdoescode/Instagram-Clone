@@ -8,6 +8,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId }) => {
     const { _id: authorId, username, profileImage, gender } = author;
@@ -35,6 +36,7 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId
             setDeleting(false);
         }
     };
+    console.log("rending");
     return (
         <Card className="w-full p-2 gap-3">
             <CardHeader className="p-0 mb-0 gap-0">
@@ -53,7 +55,7 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId
                 </div>
             </CardHeader>
 
-            <CardContent className="p-0 px-2 text-sm">
+            <CardContent className="p-0 text-sm">
                 <div className="flex items-end justify-between gap-2">
                     <p className="text-sm">
                         {expanded || !isLong ? text : `${text.slice(0, 100)}...`}
@@ -64,9 +66,9 @@ const Comment = ({ _id, text, createdAt, isAuthor, author, fetchComments, postId
                         )}
                     </p>
                     {isAuthor && (
-                        <button disabled={deleting}>
-                            <Trash2 size={18} className="cursor-pointer text-red-500 min-w-fit" onClick={deleteComment} />
-                        </button>
+                        <Button disabled={deleting} onClick={deleteComment}>
+                            <Trash2 size={18} className="cursor-pointer text-red-500 min-w-fit" />
+                        </Button>
                     )}
                 </div>
             </CardContent>

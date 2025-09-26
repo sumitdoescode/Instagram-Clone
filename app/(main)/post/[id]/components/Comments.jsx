@@ -62,7 +62,7 @@ const Comments = ({ postId }) => {
     return (
         <Card className={"w-full p-3 gap-3"}>
             <CardHeader className={"p-0"}>
-                <CardTitle className={"flex items-center justify-between"}>
+                <CardTitle className={"flex items-center justify-between mb-0 p-o gap-0"}>
                     <h1 className="text-lg">Comments ({comments?.length || 0})</h1>
                     <AlertDialog>
                         <AlertDialogTrigger>
@@ -85,9 +85,7 @@ const Comments = ({ postId }) => {
                     </AlertDialog>
                 </CardTitle>
             </CardHeader>
-            <CardContent className={"w-full flex flex-col gap-3 p-0"}>
-                {comments?.length ? comments.map((comment) => <Comment key={comment._id} {...comment} fetchComments={fetchComments} postId={postId} />) : <h1 className="text-lg">No comments yet</h1>}
-            </CardContent>
+            {comments?.length > 0 && <CardContent className={"w-full flex flex-col gap-3 p-0"}>{comments?.length && comments.map((comment) => <Comment key={comment._id} {...comment} fetchComments={fetchComments} postId={postId} />)}</CardContent>}
         </Card>
     );
 };
